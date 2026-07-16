@@ -7,6 +7,7 @@ import os
 # ---- CHANGE THIS to wherever you put the sample_for_prof folder ----
 B = "D:/STUDY/RESEARCH WORKS/IIIT HYD/sciviscontest2026/##ParaView_New"
 # --------------------------------------------------------------------
+RAYTRACING = False  # set True ONLY when exporting
 R = f"{B}/renders"; os.makedirs(R, exist_ok=True)
 G = f"{B}/task1_atmosphere/global"
 
@@ -14,8 +15,32 @@ view = GetActiveViewOrCreate("RenderView")
 view.ViewSize = [2560, 1440]   # 16:9
 view.UseColorPaletteForBackground = 0
 view.BackgroundColorMode = "Single Color"
-view.Background = [0.02, 0.03, 0.06]
+view.Background = [0.02, 0.02, 0.05]
 view.OrientationAxesVisibility = 0
+try: view.UseFXAA = 1
+except Exception: pass
+
+# ── Ray tracing — enabled only when RAYTRACING=True (export mode) ─────────────
+if RAYTRACING:
+    try:
+        view.EnableRayTracing = 1
+        for _backend in ("OptiX pathtracer", "OSPRay pathtracer", "OSPRay raycaster"):
+            try: view.BackEnd = _backend; break
+            except Exception: continue
+        view.SamplesPerPixel = 8
+        try: view.AmbientSamples = 8
+        except Exception: pass
+        try: view.LightScale     = 1.5
+        except Exception: pass
+        try: view.Shadows        = 1
+        except Exception: pass
+        try: view.Denoise        = 1
+        except Exception: pass
+        print(f"Ray tracing ON: backend={view.BackEnd}, spp={view.SamplesPerPixel}")
+    except Exception as _rte:
+        print(f"Ray tracing not available: {_rte}")
+else:
+    print("Ray tracing OFF (interactive mode) — set RAYTRACING=True before exporting")
 
 # wind speed field
 pvd = OpenDataFile(f"{G}/task1_global.pvd")
@@ -26,17 +51,16 @@ ColorBy(fd, ("POINTS", "WindSpeed_ms"))
 
 lut = GetColorTransferFunction("WindSpeed_ms")
 lut.RGBPoints = [
-      0,  0.02, 0.03, 0.06,
-     20,  0.05, 0.10, 0.40,
-     35,  0.05, 0.55, 0.70,
-     50,  0.20, 0.80, 0.30,
-     65,  0.90, 0.85, 0.10,
-     80,  1.00, 0.40, 0.00,
-     95,  1.00, 0.10, 0.10,
-    120,  1.00, 1.00, 1.00,
+      0, 0.12, 0.28, 0.78,   # calm       -> blue
+     12, 0.25, 0.55, 0.88,   # background -> light blue (same as Task 0 ocean)
+     30, 0.45, 0.82, 0.38,   # strong     -> green (same as Task 0 mild land)
+     45, 0.95, 0.88, 0.18,   # jet edge   -> yellow
+     60, 0.95, 0.48, 0.05,   # jet        -> orange
+     80, 0.85, 0.10, 0.05,   # fast jet   -> red
+    100, 1.00, 1.00, 1.00,   # extreme    -> white
 ]
 lut.ColorSpace = "Lab"
-lut.NanColor   = [0.02, 0.03, 0.06]
+lut.NanColor   = [0.02, 0.02, 0.05]
 
 fd.SetScalarBarVisibility(view, True)
 sb = GetScalarBar(lut, view)
@@ -64,13 +88,13 @@ ctd = Show(calc_ct, view)
 ColorBy(ctd, ("POINTS", "ContourLevel"))
 clut = GetColorTransferFunction("ContourLevel")
 clut.RGBPoints = [
-    38,  1.00, 1.00, 0.70,   # 40 m/s line  -> pale bright yellow
-    40,  1.00, 1.00, 1.00,   #               -> white highlight
-    58,  1.00, 0.92, 0.20,   # 60 m/s line  -> golden yellow
-    60,  1.00, 1.00, 1.00,   #               -> white highlight
-    78,  1.00, 0.50, 0.00,   # 80 m/s line  -> vivid orange
-    80,  1.00, 1.00, 1.00,   #               -> white highlight
-    82,  1.00, 0.50, 0.00,
+    38, 1.00, 1.00, 0.70,   # 40 m/s -> pale yellow
+    40, 1.00, 1.00, 1.00,
+    58, 1.00, 0.92, 0.20,   # 60 m/s -> golden yellow
+    60, 1.00, 1.00, 1.00,
+    78, 1.00, 0.50, 0.00,   # 80 m/s -> orange
+    80, 1.00, 1.00, 1.00,
+    82, 1.00, 0.50, 0.00,
 ]
 clut.ColorSpace = "RGB"
 ctd.LineWidth = 2.5

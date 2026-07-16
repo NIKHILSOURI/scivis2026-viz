@@ -7,6 +7,7 @@ import os
 # ---- CHANGE THIS to wherever you put the sample_for_prof folder ----
 B = "D:/STUDY/RESEARCH WORKS/IIIT HYD/sciviscontest2026/##ParaView_New"
 # --------------------------------------------------------------------
+RAYTRACING = False  # set True ONLY when exporting
 R = f"{B}/renders"; os.makedirs(R, exist_ok=True)
 
 # view
@@ -14,12 +15,34 @@ view = GetActiveViewOrCreate("RenderView")
 view.ViewSize                     = [2560, 1440]   # 16:9
 view.UseColorPaletteForBackground = 0
 view.BackgroundColorMode          = "Single Color"
-view.Background                   = [0.01, 0.01, 0.04]
+view.Background                   = [0.02, 0.02, 0.05]
 view.OrientationAxesVisibility    = 0
 try:
     view.UseFXAA = 1
 except Exception:
     pass
+
+# ── Ray tracing — enabled only when RAYTRACING=True (export mode) ─────────────
+if RAYTRACING:
+    try:
+        view.EnableRayTracing = 1
+        for _backend in ("OptiX pathtracer", "OSPRay pathtracer", "OSPRay raycaster"):
+            try: view.BackEnd = _backend; break
+            except Exception: continue
+        view.SamplesPerPixel = 8
+        try: view.AmbientSamples = 8
+        except Exception: pass
+        try: view.LightScale     = 1.5
+        except Exception: pass
+        try: view.Shadows        = 1
+        except Exception: pass
+        try: view.Denoise        = 1
+        except Exception: pass
+        print(f"Ray tracing ON: backend={view.BackEnd}, spp={view.SamplesPerPixel}")
+    except Exception as _rte:
+        print(f"Ray tracing not available: {_rte}")
+else:
+    print("Ray tracing OFF (interactive mode) — set RAYTRACING=True before exporting")
 
 # CEI surface
 field = OpenDataFile(f"{B}/task0_climate/frames/task0.pvd")
@@ -30,15 +53,16 @@ ColorBy(fd, ("POINTS", "CompoundExtremesIndex"))
 fd.Opacity = 0.92
 clut = GetColorTransferFunction("CompoundExtremesIndex")
 clut.RGBPoints = [
-    0.20, 0.03, 0.03, 0.10,   # calm      -> near-black blue
-    0.40, 0.10, 0.08, 0.25,   # mild      -> dark violet
-    0.55, 0.45, 0.10, 0.30,   # elevated  -> maroon
-    0.70, 0.85, 0.25, 0.05,   # high      -> orange
-    0.85, 1.00, 0.65, 0.10,   # severe    -> amber
-    0.95, 1.00, 1.00, 0.75,   # extreme   -> hot white
+    0.20, 0.25, 0.55, 0.88,   # ocean/calm    -> light blue (same as Task 0 ocean)
+    0.45, 0.35, 0.68, 0.70,   # low land      -> blue-green
+    0.60, 0.45, 0.82, 0.38,   # typical land  -> green (same as Task 0 mild land)
+    0.72, 0.95, 0.88, 0.18,   # elevated      -> yellow
+    0.82, 0.95, 0.48, 0.05,   # high          -> orange
+    0.90, 0.85, 0.10, 0.05,   # severe        -> red
+    0.97, 1.00, 1.00, 1.00,   # extreme       -> white
 ]
 clut.ColorSpace = "Lab"
-clut.NanColor   = [0.01, 0.01, 0.04]
+clut.NanColor   = [0.02, 0.02, 0.05]
 fd.SetScalarBarVisibility(view, True)
 csb = GetScalarBar(clut, view)
 csb.Title = "Compound Extremes Index (surface)"
@@ -62,7 +86,16 @@ if os.path.exists(cp_pvd):
     except Exception:
         thr.ThresholdRange = [3, 3]
     UpdatePipeline(proxy=thr)
-    gl = Glyph(Input=thr)
+    # same significance filter as viz_task0.py: only CEI hotspots > 0.70
+    thr_val = Threshold(Input=thr)
+    thr_val.Scalars = ["POINTS", "CEI_Value"]
+    try:
+        thr_val.LowerThreshold = 0.70; thr_val.UpperThreshold = 1.01
+        thr_val.ThresholdMethod = "Between"
+    except Exception:
+        thr_val.ThresholdRange = [0.70, 1.01]
+    UpdatePipeline(proxy=thr_val)
+    gl = Glyph(Input=thr_val)
     gl.GlyphType        = "Sphere"
     gl.ScaleFactor      = 1.6
     gl.GlyphMode        = "All Points"
@@ -70,10 +103,11 @@ if os.path.exists(cp_pvd):
     gl.OrientationArray = ["POINTS", "No orientation array"]
     UpdatePipeline(proxy=gl)
     gd = Show(gl, view)
-    gd.AmbientColor   = [1.00, 0.15, 0.10]
-    gd.DiffuseColor   = [1.00, 0.15, 0.10]
+    # deep crimson — same dot color as Task 0 so both views read identically
+    gd.AmbientColor   = [0.72, 0.02, 0.10]
+    gd.DiffuseColor   = [0.72, 0.02, 0.10]
     gd.ColorArrayName = ["POINTS", ""]
-    gd.Opacity        = 0.95
+    gd.Opacity        = 1.0
     print("Surface extreme maxima loaded (red spheres, animated)")
 
 # jet core tube
@@ -88,15 +122,24 @@ if os.path.exists(jet_pvd):
     jd = Show(jtube, view)
     ColorBy(jd, ("POINTS", "CoreWindSpeed_ms"))
     jlut = GetColorTransferFunction("CoreWindSpeed_ms")
+    # identical anchors to the Task 1 wind maps — same speed = same color everywhere
     jlut.RGBPoints = [
-        20, 1.00, 0.45, 0.05,   # slow jet  -> orange (danger: blocking)
-        45, 0.60, 0.85, 1.00,   # moderate  -> light blue
-        70, 0.90, 0.97, 1.00,   # fast      -> icy white
-        95, 1.00, 1.00, 1.00,
+         0, 0.12, 0.28, 0.78,
+        12, 0.25, 0.55, 0.88,
+        30, 0.45, 0.82, 0.38,
+        45, 0.95, 0.88, 0.18,
+        60, 0.95, 0.48, 0.05,
+        80, 0.85, 0.10, 0.05,
+       100, 1.00, 1.00, 1.00,
     ]
     jlut.ColorSpace = "Lab"
     jd.Opacity      = 1.0
-    jd.Specular     = 0.6
+    try:
+        jd.Interpolation = "PBR"
+        jd.Roughness     = 0.20   # smooth metallic tube
+        jd.Metallic      = 0.60
+    except Exception:
+        jd.Specular      = 0.6
     jd.SetScalarBarVisibility(view, True)
     jsb = GetScalarBar(jlut, view)
     jsb.Title = "Jet Core Speed m/s (upper atm)"
@@ -145,15 +188,10 @@ try:
 except Exception:
     pass
 
-# camera — focus on NH
+# camera — full globe (jet cores of both hemispheres are shown)
 view.CameraParallelProjection = 1
 ResetCamera(view)
-cam = GetActiveCamera()
-fp = list(cam.GetFocalPoint()); fp[1] = 18.0    # shift view north
-cam.SetFocalPoint(fp)
-pos = list(cam.GetPosition()); pos[1] = 18.0
-cam.SetPosition(pos)
-view.CameraParallelScale = view.CameraParallelScale * 0.82
+view.CameraParallelScale = view.CameraParallelScale * 0.95
 
 scene = GetAnimationScene()
 scene.UpdateAnimationUsingDataTimeSteps()

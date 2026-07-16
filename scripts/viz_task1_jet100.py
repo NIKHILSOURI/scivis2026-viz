@@ -7,16 +7,39 @@ import os
 # ---- CHANGE THIS to wherever you put the sample_for_prof folder ----
 B = "D:/STUDY/RESEARCH WORKS/IIIT HYD/sciviscontest2026/##ParaView_New"
 # --------------------------------------------------------------------
+RAYTRACING = False  # set True ONLY when exporting
 R = f"{B}/renders"; os.makedirs(R, exist_ok=True)
 
 view = GetActiveViewOrCreate("RenderView")
 view.ViewSize                     = [2560, 1440]   # 16:9
 view.UseColorPaletteForBackground = 0
 view.BackgroundColorMode          = "Single Color"
-view.Background                   = [0.01, 0.01, 0.04]
+view.Background                   = [0.02, 0.02, 0.05]
 view.OrientationAxesVisibility    = 0
 try: view.UseFXAA = 1
 except Exception: pass
+
+# ── Ray tracing — enabled only when RAYTRACING=True (export mode) ─────────────
+if RAYTRACING:
+    try:
+        view.EnableRayTracing = 1
+        for _backend in ("OptiX pathtracer", "OSPRay pathtracer", "OSPRay raycaster"):
+            try: view.BackEnd = _backend; break
+            except Exception: continue
+        view.SamplesPerPixel = 8
+        try: view.AmbientSamples = 8
+        except Exception: pass
+        try: view.LightScale     = 1.5
+        except Exception: pass
+        try: view.Shadows        = 1
+        except Exception: pass
+        try: view.Denoise        = 1
+        except Exception: pass
+        print(f"Ray tracing ON: backend={view.BackEnd}, spp={view.SamplesPerPixel}")
+    except Exception as _rte:
+        print(f"Ray tracing not available: {_rte}")
+else:
+    print("Ray tracing OFF (interactive mode) — set RAYTRACING=True before exporting")
 
 jet = OpenDataFile(f"{B}/task1_atmosphere/jet100/jet100.pvd")
 UpdatePipeline()
@@ -26,13 +49,13 @@ jd.SetRepresentationType("Surface")
 ColorBy(jd, ("POINTS", "ZonalSpeed_ms"))
 lut = GetColorTransferFunction("ZonalSpeed_ms")
 lut.RGBPoints = [
-     0, 0.02, 0.02, 0.09,
-    15, 0.05, 0.15, 0.45,
-    30, 0.05, 0.55, 0.75,
-    50, 0.30, 0.85, 0.50,
-    70, 0.95, 0.85, 0.20,
-    90, 0.98, 0.45, 0.05,
-   115, 1.00, 1.00, 0.95,
+      0, 0.12, 0.28, 0.78,   # calm       -> blue
+     12, 0.25, 0.55, 0.88,   # background -> light blue (same as Task 0 ocean)
+     30, 0.45, 0.82, 0.38,   # strong     -> green
+     45, 0.95, 0.88, 0.18,   # jet edge   -> yellow
+     60, 0.95, 0.48, 0.05,   # jet        -> orange
+     80, 0.85, 0.10, 0.05,   # fast jet   -> red
+    100, 1.00, 1.00, 1.00,   # extreme    -> white
 ]
 lut.ColorSpace = "Lab"
 jd.SetScalarBarVisibility(view, True)

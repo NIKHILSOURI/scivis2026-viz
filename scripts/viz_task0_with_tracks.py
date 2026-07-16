@@ -1,5 +1,7 @@
 #!/usr/bin/env python
-# Task 0 visualization — compound extremes 1950-2025
+# Task 0 visualization — compound extremes 1950-2025 WITH Wasserstein PD tracks
+# Shows: temperature background + CEI contours + maxima/minima dots (no saddles)
+#        + topological trajectory tubes colored by CEI intensity
 # ParaView: View > Python Shell > Run Script
 from paraview.simple import *
 import os
@@ -7,8 +9,7 @@ import os
 # ---- CHANGE THIS to wherever you put the sample_for_prof folder ----
 B  = "D:/STUDY/RESEARCH WORKS/IIIT HYD/sciviscontest2026/##ParaView_New"
 # --------------------------------------------------------------------
-# Set True ONLY when exporting — ray tracing is too slow for interactive use
-RAYTRACING = False
+RAYTRACING = False  # set True ONLY when exporting
 R  = f"{B}/renders";                   os.makedirs(R, exist_ok=True)
 F  = f"{B}/task0_climate/frames"
 CP = f"{B}/task0_climate/cp_per_step"
@@ -32,7 +33,7 @@ if RAYTRACING:
         for _backend in ("OptiX pathtracer", "OSPRay pathtracer", "OSPRay raycaster"):
             try: view.BackEnd = _backend; break
             except Exception: continue
-        view.SamplesPerPixel = 8    # raise to 16 for poster-quality stills
+        view.SamplesPerPixel = 8
         try: view.AmbientSamples = 8
         except Exception: pass
         try: view.LightScale     = 1.5
@@ -159,12 +160,73 @@ if os.path.exists(cp_pvd):
 else:
     print("WARNING: task0_cp.pvd not found. Run extract_cp_per_timestep.py first.")
 
-# Tracking note: the TTK pipeline (Tetrahedralize → PersistenceSimplification →
-# CriticalPoints) produces consistently-matched features across all 76 years.
-# The animation of the dots IS the tracking — press Play to see maxima/minima
-# persist and shift across 1950→2025. Static tube overlays from Wasserstein
-# matching produce fan artifacts and are excluded from this view.
-print("Tracking: animated critical points show TTK-tracked compound extremes (1950-2025)")
+# ── Wasserstein PD trajectory tubes ──────────────────────────────────────────
+# Uses task0_CEI_trajectories.vtp (247 pre-filtered tracks, colored by CEI Value).
+# Falls back to task0_pd_trajectories.vtp (2488 full tracks) if not found.
+# NOTE: fan/spoke patterns at convergence nodes are a known Wasserstein OT
+# artifact (unmatched features assigned to augmented cost matrix sinks).
+for track_path, track_label in [
+    (f"{B}/outputs/task0_CEI_trajectories.vtp",  "CEI trajectories (247, pre-filtered)"),
+    (f"{B}/outputs/task0_pd_trajectories.vtp",   "PD trajectories (2488, full Wasserstein)"),
+]:
+    if not os.path.exists(track_path):
+        continue
+
+    trk = XMLPolyDataReader(FileName=[track_path])
+    UpdatePipeline(proxy=trk)
+
+    trk_tube = Tube(Input=trk)
+    trk_tube.Radius        = 0.50
+    trk_tube.NumberofSides = 8
+    UpdatePipeline(proxy=trk_tube)
+
+    td = Show(trk_tube, view)
+
+    # pick the scalar available in this file
+    try:
+        from paraview import servermanager as sm
+        _raw = sm.Fetch(trk)
+        arr_names = [_raw.GetPointData().GetArrayName(i)
+                     for i in range(_raw.GetPointData().GetNumberOfArrays())]
+    except Exception:
+        arr_names = []
+    color_arr = "Value" if "Value" in arr_names else "Persistence"
+    ColorBy(td, ("POINTS", color_arr))
+
+    rlut = GetColorTransferFunction(color_arr)
+    if color_arr == "Value":
+        rlut.RGBPoints = [
+            0.40, 0.50, 0.50, 0.10,   # moderate CEI  -> dark gold
+            0.60, 1.00, 0.65, 0.00,   # elevated CEI  -> orange
+            0.80, 1.00, 0.20, 0.05,   # high CEI      -> red-orange
+            0.99, 1.00, 1.00, 1.00,   # extreme CEI   -> white
+        ]
+        bar_title = "CEI Track Intensity"
+    else:
+        rlut.RGBPoints = [
+            0.04, 0.50, 0.50, 0.50,   # low       -> grey
+            0.15, 0.85, 0.85, 0.15,   # moderate  -> gold
+            0.40, 1.00, 0.55, 0.00,   # high      -> orange
+            0.99, 1.00, 1.00, 1.00,   # extreme   -> white
+        ]
+        bar_title = "Track Persistence"
+    rlut.ColorSpace = "Lab"
+    td.Opacity = 0.75
+
+    td.SetScalarBarVisibility(view, True)
+    rsb = GetScalarBar(rlut, view)
+    rsb.Title           = bar_title
+    rsb.ComponentTitle  = ""
+    rsb.TitleColor      = [0.80, 0.80, 0.80]
+    rsb.LabelColor      = [0.60, 0.60, 0.60]
+    try:
+        rsb.WindowLocation = "Any Location"
+    except Exception: pass
+    rsb.Position        = [0.935, 0.86]
+    rsb.ScalarBarLength = 0.12
+
+    print(f"Tracks loaded: {track_label}")
+    break   # use first file found
 
 # coastlines and borders
 G = f"{B}/task1_atmosphere/global"
@@ -182,7 +244,7 @@ for vtp_file, color, lw in [
         cd.ColorArrayName  = ["POINTS", ""]
 print("Coastlines loaded")
 
-# year label — PVD timestep values are 1950..2025 so it shows the year directly
+# year label
 _label_ok = False
 for _name in ("AnnotateTimeFilter", "AnnotationTimeFilter"):
     _cls = globals().get(_name)
@@ -222,15 +284,18 @@ scene.UpdateAnimationUsingDataTimeSteps()
 print(f"Animation range: {scene.StartTime} to {scene.EndTime}")
 
 Render(view)
-SaveScreenshot(f"{R}/stills/task0_clean.png", view, ImageResolution=[2560, 1440])
-print(f"Screenshot: {R}/task0_clean.png")
+SaveScreenshot(f"{R}/stills/task0_with_tracks.png", view, ImageResolution=[2560, 1440])
+print(f"Screenshot: {R}/task0_with_tracks.png")
 print()
 print("What you see:")
-print("  Red dots   = CEI maxima > 0.70  (significant compound extreme hot-spots)")
-print("  Blue dots  = CEI minima (calm cool spots — contrast to red)")
-print("  White rings= CEI stress zones (0.65 / 0.75 / 0.85)")
-print("  Background = Air temperature")
-print("  (Saddles and low-CEI maxima filtered out)")
+print("  Red dots          = CEI maxima > 0.60  (significant compound extreme hot-spots)")
+print("  White rings       = CEI stress zones (0.65 / 0.75 / 0.85)")
+print("  Gold/orange tubes = Wasserstein topological tracks (feature trajectories)")
+print("  Background        = Air temperature")
+print("  (Saddles, minima, and low-CEI maxima all filtered out)")
+print()
+print("NOTE: fan/spoke patterns at track convergence nodes are a known Wasserstein")
+print("      OT artifact — unmatched features assigned to augmented cost matrix sinks.")
 print()
 print("Press Play to animate 1950->2025")
-print("Export: File > Save Animation > MP4, 6 fps, 2560x1340")
+print("Export: File > Save Animation > MP4, 6 fps, 2560x1440")

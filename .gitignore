@@ -1,0 +1,14 @@
+# Python
+__pycache__/
+*.pyc
+
+# Large data folders — never push (multi-GB VTI/VTP/PNG/MP4)
+task0_climate/
+task1_atmosphere/
+task3_ocean/
+archive_task3/
+renders/
+outputs/
+_excluded_from_paper/
+ttk_reference/
+builders/
