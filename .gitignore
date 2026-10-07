@@ -7,7 +7,7 @@ task0_climate/
 task1_atmosphere/
 task3_ocean/
 archive_task3/
-renders/
+/renders/
 outputs/
 _excluded_from_paper/
 ttk_reference/
