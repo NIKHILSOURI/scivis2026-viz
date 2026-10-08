@@ -199,13 +199,13 @@ for k, (z, _m, label) in enumerate(LAYERS):
         print(f"Label '{label}' skipped: {e}")
 
 
-# camera
+# camera — closer and wider angle to fill the 16:9 canvas
 view.CameraParallelProjection = 0
 cam = GetActiveCamera()
 cam.SetFocalPoint(0.0, 10.0, 80.0)
-cam.SetPosition(-140.0, -390.0, 300.0)
+cam.SetPosition(-100.0, -290.0, 220.0)
 cam.SetViewUp(0.0, 0.0, 1.0)
-view.CameraViewAngle = 30
+view.CameraViewAngle = 38
 
 scene = GetAnimationScene()
 scene.UpdateAnimationUsingDataTimeSteps()

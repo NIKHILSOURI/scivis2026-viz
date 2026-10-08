@@ -150,14 +150,13 @@ scene = GetAnimationScene()
 scene.UpdateAnimationUsingDataTimeSteps()
 print(f"Animation range: {scene.StartTime} to {scene.EndTime}")
 
-# camera
+# camera — explicit parallel scale to fill 16:9 canvas edge-to-edge
 view.CameraParallelProjection = 1
-ResetCamera(view)
 cam = GetActiveCamera()
 cam.SetPosition(0, 0, 1)
 cam.SetFocalPoint(0, 0, 0)
 cam.SetViewUp(0, 1, 0)
-ResetCamera(view)
+cam.SetParallelScale(103)   # ±180 lon × ±90 lat in 16:9 (width-constrained: 360/2/1.778=101)
 Render(view)
 
 os.makedirs(f"{R}/stills", exist_ok=True)

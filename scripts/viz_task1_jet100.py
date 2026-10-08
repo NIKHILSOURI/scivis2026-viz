@@ -93,9 +93,11 @@ if os.path.exists(coast):
 
 
 view.CameraParallelProjection = 1
-ResetCamera(view)
-# slight zoom so the map fills the 16:9 canvas edge-to-edge
-view.CameraParallelScale = view.CameraParallelScale * 0.92
+cam = GetActiveCamera()
+cam.SetPosition(0, 0, 1)
+cam.SetFocalPoint(0, 0, 0)
+cam.SetViewUp(0, 1, 0)
+cam.SetParallelScale(103)   # ±180 lon × ±90 lat in 16:9 (width-constrained: 360/2/1.778=101)
 
 scene = GetAnimationScene()
 scene.UpdateAnimationUsingDataTimeSteps()

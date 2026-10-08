@@ -173,6 +173,17 @@ for _name in ("AnnotateTimeFilter", "AnnotationTimeFilter"):
 # ── Camera ────────────────────────────────────────────────────────────────────
 view.CameraParallelProjection = 1
 ResetCamera(view)
+try:
+    _b = field.GetDataInformation().GetBounds()
+    _cx, _cy = (_b[0]+_b[1])/2.0, (_b[2]+_b[3])/2.0
+    _lon_ext, _lat_ext = _b[1]-_b[0], _b[3]-_b[2]
+    _vw, _vh = float(view.ViewSize[0]), float(view.ViewSize[1])
+    _ps = max(_lat_ext, _lon_ext / (_vw / _vh)) / 2.0 * 1.02
+    cam = GetActiveCamera()
+    cam.SetFocalPoint(_cx, _cy, 0); cam.SetPosition(_cx, _cy, 1); cam.SetViewUp(0, 1, 0)
+    cam.SetParallelScale(_ps)
+except Exception as _e:
+    print("Camera auto-fit: " + str(_e))
 
 scene = GetAnimationScene()
 scene.UpdateAnimationUsingDataTimeSteps()
@@ -182,3 +193,20 @@ Render(view)
 os.makedirs(R + "/stills", exist_ok=True)
 SaveScreenshot(R + "/stills/task0_clean.png", view, ImageResolution=[1920, 1080])
 print("Hero still saved: " + R + "/stills/task0_clean.png")
+
+# ── Export 76 frames ──────────────────────────────────────────────────────────
+_pdf_dir = R + "/pdf_stills/task0_frames"
+os.makedirs(_pdf_dir, exist_ok=True)
+try:
+    _ts = list(scene.TimeKeeper.TimestepValues)
+except Exception:
+    _ts = list(range(1950, 2026))
+print("Exporting " + str(len(_ts)) + " frames -> " + _pdf_dir)
+for _i, _t in enumerate(_ts):
+    scene.AnimationTime = float(_t)
+    UpdatePipeline(); Render(view)
+    _png = _pdf_dir + "/frame_" + str(_i).zfill(2) + "_t" + str(int(round(_t))) + ".png"
+    SaveScreenshot(_png, view, ImageResolution=[1920, 1080])
+    if (_i % 10 == 0) or (_i == len(_ts) - 1):
+        print("  [" + str(_i+1) + "/" + str(len(_ts)) + "] year " + str(int(round(_t))))
+print("Done. Tell Claude to deploy.")
