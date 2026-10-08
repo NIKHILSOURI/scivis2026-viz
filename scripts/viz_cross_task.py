@@ -7,7 +7,7 @@ import os
 # ---- CHANGE THIS to wherever you put the sample_for_prof folder ----
 B = "D:/STUDY/RESEARCH WORKS/IIIT HYD/sciviscontest2026/##ParaView_New"
 # --------------------------------------------------------------------
-RAYTRACING      = True   # RTX enabled — disable for interactive, enable for export
+RAYTRACING      = False  # RTX causes empty frames on flat 2D surfaces; rasterizer renders correctly
 SAVE_ALL_FRAMES = True   # export all 76 years to renders/pdf_stills/task3_frames/
 SAVE_PDF_STILLS = True   # still export 5 key-year stills too
 PDF_RESOLUTION  = [1920, 1080]

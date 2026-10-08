@@ -8,7 +8,7 @@ import os
 B  = "D:/STUDY/RESEARCH WORKS/IIIT HYD/sciviscontest2026/##ParaView_New"
 # --------------------------------------------------------------------
 # Set True ONLY when exporting â€" ray tracing is too slow for interactive use
-RAYTRACING      = True   # RTX enabled — disable for interactive, enable for export
+RAYTRACING      = False  # RTX causes empty frames on flat 2D surfaces; rasterizer renders correctly
 SAVE_ALL_FRAMES = True   # export all 76 years to renders/pdf_stills/task0_frames/
 R  = f"{B}/renders";                   os.makedirs(R, exist_ok=True)
 F  = f"{B}/task0_climate/frames"
