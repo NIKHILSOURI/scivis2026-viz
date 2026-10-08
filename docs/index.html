@@ -214,7 +214,7 @@ footer {
 
 <!-- NAV -->
 <nav>
-  <div class="nav-logo"><span>SciVis</span> 2026</div>
+  <div class="nav-logo"><span>SciVis</span> 2026 &nbsp;<span style="font-size:10px;font-weight:500;color:var(--blue);opacity:0.85">Finalist</span></div>
   <div class="nav-links">
     <a href="#datasets">Data</a>
     <a href="#task0">Task 0</a>
@@ -230,7 +230,7 @@ footer {
 <section id="hero">
   <div class="collab-badge">
     <span>IIIT Hyderabad</span>
-    <span class="collab-sep">Ã—</span>
+    <span class="collab-sep">×</span>
     <span>BTH Sweden</span>
   </div>
   <div class="ieee-badge">IEEE SciVis Contest 2026 · Finalist</div>
@@ -273,38 +273,39 @@ footer {
   <div class="container">
     <p class="section-label reveal">Task 0</p>
     <h2 class="reveal">DHMI Field &amp; Topological Analysis</h2>
-    <p class="section-desc reveal">Two complementary views of the same 75-year compound-extremes record, controlled by a single shared year slider. The hero thumbnails below mark the four most significant years identified in our analysis.</p>
+    <p class="section-desc reveal">Two independent views of the same 75-year compound-extremes record. Each has its own year slider. The hero thumbnails mark the four most significant years identified in our analysis.</p>
 
     <!-- 0a: DHMI Sweep -->
-    <div class="reveal" style="margin-bottom:40px">
+    <div class="reveal" style="margin-bottom:48px">
       <div class="browser-label" style="font-size:13px;color:var(--ink);margin-bottom:4px">0a &nbsp;·&nbsp; DHMI Sweep — Year by Year</div>
       <p style="font-size:13px;color:var(--ink2);max-width:680px;margin-bottom:12px;line-height:1.6">The Dry-Hot Magnitude Index (DHMI = 0.4·T̂ + 0.4·(1−P̂) + 0.2·Ĥ) combines normalised temperature, precipitation deficit, and humidity anomalies into a single compound-stress scalar per grid cell. Drag through all 76 years to watch hotspots emerge, intensify, and shift poleward — the Amazon and South-East Asian corridors show the strongest long-term accumulation, with the single most intense individual event recorded in 1952 (Amazon, persistence 0.99).</p>
       <div class="frame-browser">
         <div class="frame-img-wrap">
           <img id="t0-img" src="renders/pdf_stills/task0_frames/frame_00_t1950.webp" alt="DHMI 1950">
         </div>
+        <div class="frame-ctrl">
+          <span class="ctrl-label">Year</span>
+          <input type="range" id="t0-slider" min="0" max="75" value="0" oninput="updateT0(+this.value)">
+          <div class="frame-badge" id="t0-badge">1950</div>
+        </div>
       </div>
+      <div class="thumb-strip" id="t0-thumbs" style="margin-top:10px"></div>
     </div>
 
     <!-- 0b: ELS Topology -->
-    <div class="reveal" style="margin-bottom:20px">
+    <div class="reveal">
       <div class="browser-label" style="font-size:13px;color:var(--ink);margin-bottom:4px">0b &nbsp;·&nbsp; ELS Topology — Up Close</div>
       <p style="font-size:13px;color:var(--ink2);max-width:680px;margin-bottom:12px;line-height:1.6">Extremal Level Sets (ELS) extracted with TTK's persistence diagram (saddle-to-maximum pairs, threshold 0.04) identify ~750 coherent compound-stress hotspots per year. Wasserstein matching links features across consecutive years to reveal their birth, death, merging, and splitting — producing 2,488 continuous tracks over the full 76-year record. The Reeb graph topology (left panel) encodes structural change; the DHMI scalar field (right) gives spatial context.</p>
       <div class="frame-browser">
         <div class="frame-img-wrap">
           <img id="t2-img" src="renders/anim_combined/frame_0000.webp" alt="ELS 1950">
         </div>
+        <div class="frame-ctrl">
+          <span class="ctrl-label">Year</span>
+          <input type="range" id="t2-slider" min="0" max="75" value="0" oninput="updateT2(+this.value)">
+          <div class="frame-badge" id="t2-badge">1950</div>
+        </div>
       </div>
-    </div>
-
-    <!-- Shared controls -->
-    <div class="reveal">
-      <div class="frame-ctrl">
-        <span class="ctrl-label">Year</span>
-        <input type="range" id="t0-slider" min="0" max="75" value="0" oninput="updateT0(+this.value)">
-        <div class="frame-badge" id="t0-badge">1950</div>
-      </div>
-      <div class="thumb-strip" id="t0-thumbs" style="margin-top:10px"></div>
     </div>
   </div>
 </section>
@@ -467,7 +468,7 @@ footer {
 <footer>
   <div class="ft-collab">
     <div class="ft-inst"><span>IIIT</span> Hyderabad</div>
-    <div class="ft-x">Ã—</div>
+    <div class="ft-x">×</div>
     <div class="ft-inst"><span>BTH</span> Sweden</div>
   </div>
   <div class="ft-title">Nikhil Souri · Raghavendra · Prashant – IIIT Hyderabad &nbsp;|&nbsp; Collaborators – BTH Blekinge Institute of Technology</div>
@@ -506,16 +507,13 @@ document.querySelectorAll('input[type=range]').forEach(el => el.addEventListener
 // 2006 hero/record compound extreme, 2025 end of record
 const KEY_FRAME_IDX = [0, 32, 56, 75];
 
-// -- TASK 0 + 2 (shared slider) -------------------------------------------
+// -- TASK 0a: DHMI sweep (independent) -----------------------------------
 function updateT0(i) {
   const f = T0_DATA[i];
   document.getElementById('t0-img').src = f.file;
   document.getElementById('t0-badge').textContent = f.year;
-  // sync ELS topology panel
-  document.getElementById('t2-img').src =
-    'renders/anim_combined/frame_' + String(i).padStart(4,'0') + '.webp';
   pct(document.getElementById('t0-slider'));
-  // active thumbnail: whichever key year is nearest
+  // highlight nearest key-year thumbnail
   const thumbs = document.querySelectorAll('#t0-thumbs .thumb');
   let nearest = 0, minDist = Infinity;
   KEY_FRAME_IDX.forEach((ki, j) => {
@@ -523,6 +521,14 @@ function updateT0(i) {
     if (d < minDist) { minDist = d; nearest = j; }
   });
   thumbs.forEach((el, j) => el.classList.toggle('active', j === nearest));
+}
+
+// -- TASK 0b: ELS topology (independent) ---------------------------------
+function updateT2(i) {
+  document.getElementById('t2-img').src =
+    'renders/anim_combined/frame_' + String(i).padStart(4,'0') + '.webp';
+  document.getElementById('t2-badge').textContent = 1950 + i;
+  pct(document.getElementById('t2-slider'));
 }
 
 // Build Task 0 thumbnails — 4 key years from the paper
