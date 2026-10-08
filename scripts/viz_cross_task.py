@@ -9,8 +9,6 @@ import os
 
 B = "D:/STUDY/RESEARCH WORKS/IIIT HYD/sciviscontest2026/##ParaView_New"
 
-SAVE_ALL_FRAMES = True
-SAVE_KEY_STILLS = True
 R = B + "/renders"
 os.makedirs(R, exist_ok=True)
 
@@ -192,31 +190,3 @@ SaveScreenshot(R + "/stills/cross_task_hero.png", view, ImageResolution=[1920, 1
 print("Hero still saved.")
 
 # ── Export 5 key-year stills ──────────────────────────────────────────────────
-if SAVE_KEY_STILLS:
-    _pdf_dir = R + "/pdf_stills/cross_task"
-    os.makedirs(_pdf_dir, exist_ok=True)
-    for _i, _t in enumerate([1950, 1969, 1988, 2006, 2025]):
-        scene.AnimationTime = float(_t)
-        UpdatePipeline(); Render(view)
-        _png = _pdf_dir + "/frame_" + str(_i).zfill(2) + "_yr" + str(_t) + ".png"
-        SaveScreenshot(_png, view, ImageResolution=[1920, 1080])
-        print("  key year " + str(_t))
-
-# ── Export ALL 76 frames ──────────────────────────────────────────────────────
-if SAVE_ALL_FRAMES:
-    _all_dir = R + "/pdf_stills/task3_frames"
-    os.makedirs(_all_dir, exist_ok=True)
-    try:
-        _ts = list(scene.TimeKeeper.TimestepValues)
-    except Exception:
-        _ts = list(range(1950, 2026))
-    print("Exporting " + str(len(_ts)) + " frames -> " + _all_dir)
-    for _i, _t in enumerate(_ts):
-        scene.AnimationTime = float(_t)
-        UpdatePipeline(); Render(view)
-        _t_int = int(round(_t))
-        _png = _all_dir + "/frame_" + str(_i).zfill(2) + "_t" + str(_t_int) + ".png"
-        SaveScreenshot(_png, view, ImageResolution=[1920, 1080])
-        if (_i % 10 == 0) or (_i == len(_ts) - 1):
-            print("  [" + str(_i+1) + "/" + str(len(_ts)) + "] year " + str(_t_int))
-    print("Done. Run deploy_task0_and_3_frames.py to convert to WebP.")

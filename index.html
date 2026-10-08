@@ -420,11 +420,11 @@ footer {
       <div>
         <div class="frame-browser">
           <div class="frame-img-wrap">
-            <img id="t3-img" src="docs/renders/pdf_stills/cross_task/frame_00_yr1950.webp" alt="Cross-task 1950">
+            <img id="t3-img" src="docs/renders/pdf_stills/task3_frames/frame_00_t1950.webp" alt="Cross-task 1950">
           </div>
           <div class="frame-ctrl">
             <span class="ctrl-label">Year</span>
-            <input type="range" id="t3-slider" min="0" max="4" value="0" oninput="updateT3(+this.value)">
+            <input type="range" id="t3-slider" min="0" max="75" value="0" oninput="updateT3(+this.value)">
             <div class="frame-badge" id="t3-badge">1950</div>
           </div>
         </div>
@@ -551,13 +551,10 @@ function preloadNeighbors(base, frames, i) {
     if (j >= 0 && j < frames.length) preload(base + frames[j].file);
   });
 }
-const T3_DATA = [
-  { file: BASE+'pdf_stills/cross_task/frame_00_yr1950.webp', label:'1950' },
-  { file: BASE+'pdf_stills/cross_task/frame_01_yr1969.webp', label:'1969' },
-  { file: BASE+'pdf_stills/cross_task/frame_02_yr1988.webp', label:'1988' },
-  { file: BASE+'pdf_stills/cross_task/frame_03_yr2006.webp', label:'2006' },
-  { file: BASE+'pdf_stills/cross_task/frame_04_yr2025.webp', label:'2025' },
-];
+const T3_DATA = Array.from({length:76}, (_,i) => ({
+  file: BASE+'pdf_stills/task3_frames/frame_'+String(i).padStart(2,'0')+'_t'+(1950+i)+'.webp',
+  label: String(1950+i)
+}));
 
 // ── SLIDER FILL UTILITY ────────────────────────────────────────────────
 function pct(el) {
