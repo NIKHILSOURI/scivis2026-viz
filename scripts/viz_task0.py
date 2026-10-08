@@ -1,12 +1,15 @@
 #!/usr/bin/env python
 # Task 0 - DHMI compound extremes field 1950-2025
 # ParaView: View > Python Shell > Reset > Run Script
+#
+# VTI note: task0 data is a flat (1440x600x1) image with Z-extent=0.
+# Use "Slice" representation (NOT "Surface") to see the 2D color map.
 from paraview.simple import *
 import os
 
 B  = "D:/STUDY/RESEARCH WORKS/IIIT HYD/sciviscontest2026/##ParaView_New"
 
-SAVE_ALL_FRAMES = True   # export all 76 years to renders/pdf_stills/task0_frames/
+SAVE_ALL_FRAMES = True
 R  = B + "/renders"
 F  = B + "/task0_climate/frames"
 CP = B + "/task0_climate/cp_per_step"
@@ -24,15 +27,13 @@ try:
 except Exception:
     pass
 
-print("RAYTRACING OFF - using rasterizer with FXAA")
-
-# ── Temperature background ────────────────────────────────────────────────────
+# ── Temperature field (VTI flat slab - MUST use Slice representation) ─────────
 field = OpenDataFile(F + "/task0.pvd")
 UpdatePipeline()
 fd = Show(field, view)
-fd.SetRepresentationType("Surface")
+fd.SetRepresentationType("Slice")   # "Surface" is invisible on Z=0 flat VTI
 ColorBy(fd, ("POINTS", "AirTemperature_C"))
-fd.Opacity = 0.85
+fd.Opacity = 1.0
 
 tlut = GetColorTransferFunction("AirTemperature_C")
 tlut.RGBPoints = [
@@ -83,7 +84,6 @@ if os.path.exists(cp_pvd):
     cp_reader = OpenDataFile(cp_pvd)
     UpdatePipeline()
 
-    # Maxima: red spheres, CEI > 0.80
     thr_max = Threshold(Input=cp_reader)
     thr_max.Scalars = ["POINTS", "CriticalType"]
     try:
@@ -115,7 +115,6 @@ if os.path.exists(cp_pvd):
     d_max.ColorArrayName = ["POINTS", ""]
     d_max.Opacity        = 1.0
 
-    # Minima: blue spheres, all
     thr_min = Threshold(Input=cp_reader)
     thr_min.Scalars = ["POINTS", "CriticalType"]
     try:
@@ -137,70 +136,53 @@ if os.path.exists(cp_pvd):
     d_min.DiffuseColor   = [0.02, 0.10, 0.85]
     d_min.ColorArrayName = ["POINTS", ""]
     d_min.Opacity        = 1.0
-
-    print("Critical points loaded: red = maxima > 0.80 | blue = minima")
+    print("Critical points loaded")
 else:
-    print("WARNING: task0_cp.pvd not found. Run extract_cp_per_timestep.py first.")
+    print("WARNING: task0_cp.pvd not found")
 
-# ── Coastlines and borders ────────────────────────────────────────────────────
+# ── Coastlines ────────────────────────────────────────────────────────────────
 G = B + "/task1_atmosphere/global"
-for vtp_file, color, lw in [
+for vtp, color, lw in [
     (G + "/world_coastlines.vtp", [0.15, 0.20, 0.30], 1.2),
     (G + "/world_countries.vtp",  [0.32, 0.38, 0.45], 0.7),
 ]:
-    if os.path.exists(vtp_file):
-        coast = XMLPolyDataReader(FileName=[vtp_file])
-        UpdatePipeline(proxy=coast)
-        cd = Show(coast, view)
-        cd.AmbientColor   = color
-        cd.DiffuseColor   = color
-        cd.LineWidth      = lw
-        cd.Opacity        = 0.80
-        cd.ColorArrayName = ["POINTS", ""]
+    if os.path.exists(vtp):
+        rd = XMLPolyDataReader(FileName=[vtp])
+        UpdatePipeline(proxy=rd)
+        dd = Show(rd, view)
+        dd.AmbientColor = color; dd.DiffuseColor = color
+        dd.LineWidth = lw; dd.Opacity = 0.80
+        dd.ColorArrayName = ["POINTS", ""]
 print("Coastlines loaded")
 
-# ── Year label ────────────────────────────────────────────────────────────────
-_label_ok = False
+# ── Year annotation ───────────────────────────────────────────────────────────
 for _name in ("AnnotateTimeFilter", "AnnotationTimeFilter"):
     _cls = globals().get(_name)
-    if _cls is None:
-        continue
+    if _cls is None: continue
     try:
         ann = _cls(Input=field)
         ann.Format = "Year: {time:.0f}"
         ann_d = Show(ann, view)
-        ann_d.FontSize       = 36
-        ann_d.Color          = [0.10, 0.10, 0.40]
+        ann_d.FontSize = 36
+        ann_d.Color = [0.10, 0.10, 0.40]
         ann_d.WindowLocation = "Upper Left Corner"
-        _label_ok = True
+        print("Year label added via " + _name)
         break
     except Exception as _e:
         print("  " + _name + ": " + str(_e))
 
-if not _label_ok:
-    try:
-        txt = Text()
-        txt.Text = "Year: 1950"
-        txt_d = Show(txt, view)
-        txt_d.FontSize       = 36
-        txt_d.Color          = [0.10, 0.10, 0.40]
-        txt_d.WindowLocation = "Upper Left Corner"
-        print("Year label: static text")
-    except Exception as _e2:
-        print("Year label skipped: " + str(_e2))
-
-# ── Camera and animation ──────────────────────────────────────────────────────
+# ── Camera ────────────────────────────────────────────────────────────────────
 view.CameraParallelProjection = 1
 ResetCamera(view)
 
 scene = GetAnimationScene()
 scene.UpdateAnimationUsingDataTimeSteps()
-print("Animation range: " + str(scene.StartTime) + " to " + str(scene.EndTime))
+print("Timesteps: " + str(len(list(scene.TimeKeeper.TimestepValues))))
 
 Render(view)
 os.makedirs(R + "/stills", exist_ok=True)
 SaveScreenshot(R + "/stills/task0_clean.png", view, ImageResolution=[1920, 1080])
-print("Hero still saved.")
+print("Hero still saved: " + R + "/stills/task0_clean.png")
 
 # ── Export ALL 76 frames ──────────────────────────────────────────────────────
 if SAVE_ALL_FRAMES:
@@ -210,7 +192,7 @@ if SAVE_ALL_FRAMES:
         _ts = list(scene.TimeKeeper.TimestepValues)
     except Exception:
         _ts = list(range(1950, 2026))
-    print("Exporting ALL " + str(len(_ts)) + " Task 0 frames -> " + _pdf_dir)
+    print("Exporting " + str(len(_ts)) + " frames -> " + _pdf_dir)
     for _i, _t in enumerate(_ts):
         scene.AnimationTime = float(_t)
         UpdatePipeline()
@@ -218,11 +200,6 @@ if SAVE_ALL_FRAMES:
         _t_int = int(round(_t))
         _png = _pdf_dir + "/frame_" + str(_i).zfill(2) + "_t" + str(_t_int) + ".png"
         SaveScreenshot(_png, view, ImageResolution=[1920, 1080])
-        print("  [" + str(_i+1) + "/" + str(len(_ts)) + "] year " + str(_t_int))
-    print("Done. Run deploy_task0_and_3_frames.py to convert to WebP and publish.")
-else:
-    print("Set SAVE_ALL_FRAMES=True to export all 76 frames.")
-    print("Red dots   = CEI maxima > 0.80  (compound extreme hotspots)")
-    print("Blue dots  = CEI minima")
-    print("White rings= CEI contours at 0.65 / 0.75 / 0.85")
-    print("Background = Air temperature | Gray background = paper-ready")
+        if (_i % 10 == 0) or (_i == len(_ts) - 1):
+            print("  [" + str(_i+1) + "/" + str(len(_ts)) + "] year " + str(_t_int))
+    print("Done. Run deploy_task0_and_3_frames.py to convert to WebP.")

@@ -1,13 +1,16 @@
 #!/usr/bin/env python
-# Task 3 - Ocean-Atmosphere cross-task: CEI surface + jet core tube
+# Task 3 - Ocean-Atmosphere: CEI surface + jet core tube
 # ParaView: View > Python Shell > Reset > Run Script
+#
+# VTI note: task0 data is a flat (1440x600x1) image with Z-extent=0.
+# Use "Slice" representation (NOT "Surface") to see the 2D color map.
 from paraview.simple import *
 import os
 
 B = "D:/STUDY/RESEARCH WORKS/IIIT HYD/sciviscontest2026/##ParaView_New"
 
-SAVE_ALL_FRAMES = True   # export all 76 years
-SAVE_KEY_STILLS = True   # also save 5 key-year stills for the paper
+SAVE_ALL_FRAMES = True
+SAVE_KEY_STILLS = True
 R = B + "/renders"
 os.makedirs(R, exist_ok=True)
 
@@ -23,15 +26,13 @@ try:
 except Exception:
     pass
 
-print("RAYTRACING OFF - using rasterizer with FXAA for crisp flat-map export")
-
-# ── DHMI / CEI surface ────────────────────────────────────────────────────────
+# ── DHMI / CEI surface (VTI flat slab - MUST use Slice representation) ────────
 field = OpenDataFile(B + "/task0_climate/frames/task0.pvd")
 UpdatePipeline()
 fd = Show(field, view)
-fd.SetRepresentationType("Surface")
+fd.SetRepresentationType("Slice")   # "Surface" is invisible on Z=0 flat VTI
 ColorBy(fd, ("POINTS", "CompoundExtremesIndex"))
-fd.Opacity = 0.92
+fd.Opacity = 1.0
 
 clut = GetColorTransferFunction("CompoundExtremesIndex")
 clut.RGBPoints = [
@@ -43,8 +44,8 @@ clut.RGBPoints = [
     0.90, 0.85, 0.10, 0.05,
     0.97, 0.55, 0.00, 0.55,
 ]
-clut.ColorSpace   = "Lab"
-clut.NanColor     = [0.96, 0.93, 0.86]
+clut.ColorSpace = "Lab"
+clut.NanColor   = [0.96, 0.93, 0.86]
 
 fd.SetScalarBarVisibility(view, True)
 csb = GetScalarBar(clut, view)
@@ -63,7 +64,7 @@ except Exception: pass
 try:    csb.Interactivity = 0
 except Exception: pass
 
-# ── CEI extreme maxima (red spheres, animated) ────────────────────────────────
+# ── CEI extreme maxima (red spheres) ─────────────────────────────────────────
 cp_pvd = B + "/task0_climate/cp_per_step/task0_cp.pvd"
 if os.path.exists(cp_pvd):
     cp = OpenDataFile(cp_pvd)
@@ -93,15 +94,14 @@ if os.path.exists(cp_pvd):
     gl.ScaleArray       = ["POINTS", "No scale array"]
     gl.OrientationArray = ["POINTS", "No orientation array"]
     UpdatePipeline(proxy=gl)
-
     gd = Show(gl, view)
     gd.AmbientColor   = [0.72, 0.02, 0.10]
     gd.DiffuseColor   = [0.72, 0.02, 0.10]
     gd.ColorArrayName = ["POINTS", ""]
     gd.Opacity        = 1.0
-    print("Critical points loaded (red spheres = CEI maxima > 0.80)")
+    print("Critical points loaded")
 else:
-    print("WARNING: cp_per_step/task0_cp.pvd not found - no critical points")
+    print("NOTE: task0_cp.pvd not found - no critical points overlay")
 
 # ── Jet core tube (optional) ──────────────────────────────────────────────────
 jet_pvd = B + "/task1_atmosphere/jet_core/jet_core.pvd"
@@ -146,9 +146,9 @@ if os.path.exists(jet_pvd):
     except Exception: pass
     print("Jet core tube loaded")
 else:
-    print("NOTE: jet_core.pvd not found - showing DHMI field only")
+    print("NOTE: jet_core.pvd not found - DHMI field only")
 
-# ── Coastlines and borders ────────────────────────────────────────────────────
+# ── Coastlines ────────────────────────────────────────────────────────────────
 G = B + "/task1_atmosphere/global"
 for vf, c, lw in [
     (G + "/world_coastlines.vtp", [0.15, 0.20, 0.30], 1.3),
@@ -158,26 +158,21 @@ for vf, c, lw in [
         rd = XMLPolyDataReader(FileName=[vf])
         UpdatePipeline(proxy=rd)
         dd = Show(rd, view)
-        dd.AmbientColor   = c
-        dd.DiffuseColor   = c
-        dd.LineWidth      = lw
-        dd.Opacity        = 0.85
+        dd.AmbientColor = c; dd.DiffuseColor = c
+        dd.LineWidth = lw; dd.Opacity = 0.85
         dd.ColorArrayName = ["POINTS", ""]
 
-# ── Year label ────────────────────────────────────────────────────────────────
-_label_ok = False
+# ── Year annotation ───────────────────────────────────────────────────────────
 for _name in ("AnnotateTimeFilter", "AnnotationTimeFilter"):
     _cls = globals().get(_name)
-    if _cls is None:
-        continue
+    if _cls is None: continue
     try:
         ann = _cls(Input=field)
         ann.Format = "Year: {time:.0f}"
         ad = Show(ann, view)
-        ad.FontSize       = 40
-        ad.Color          = [0.10, 0.10, 0.10]
+        ad.FontSize = 40; ad.Color = [0.10, 0.10, 0.10]
         ad.WindowLocation = "Upper Right Corner"
-        _label_ok = True
+        print("Year label added via " + _name)
         break
     except Exception:
         pass
@@ -189,26 +184,23 @@ view.CameraParallelScale = view.CameraParallelScale * 0.95
 
 scene = GetAnimationScene()
 scene.UpdateAnimationUsingDataTimeSteps()
-print("Animation range: " + str(scene.StartTime) + " -> " + str(scene.EndTime))
+print("Timesteps: " + str(len(list(scene.TimeKeeper.TimestepValues))))
 
 Render(view)
 os.makedirs(R + "/stills", exist_ok=True)
 SaveScreenshot(R + "/stills/cross_task_hero.png", view, ImageResolution=[1920, 1080])
 print("Hero still saved.")
 
-# ── Export 5 key-year stills for paper ───────────────────────────────────────
+# ── Export 5 key-year stills ──────────────────────────────────────────────────
 if SAVE_KEY_STILLS:
     _pdf_dir = R + "/pdf_stills/cross_task"
     os.makedirs(_pdf_dir, exist_ok=True)
-    _key_t = [1950, 1969, 1988, 2006, 2025]
-    print("Exporting " + str(len(_key_t)) + " key-year stills -> " + _pdf_dir)
-    for _i, _t in enumerate(_key_t):
+    for _i, _t in enumerate([1950, 1969, 1988, 2006, 2025]):
         scene.AnimationTime = float(_t)
-        UpdatePipeline()
-        Render(view)
+        UpdatePipeline(); Render(view)
         _png = _pdf_dir + "/frame_" + str(_i).zfill(2) + "_yr" + str(_t) + ".png"
         SaveScreenshot(_png, view, ImageResolution=[1920, 1080])
-        print("  [" + str(_i+1) + "/" + str(len(_key_t)) + "] year " + str(_t))
+        print("  key year " + str(_t))
 
 # ── Export ALL 76 frames ──────────────────────────────────────────────────────
 if SAVE_ALL_FRAMES:
@@ -218,13 +210,13 @@ if SAVE_ALL_FRAMES:
         _ts = list(scene.TimeKeeper.TimestepValues)
     except Exception:
         _ts = list(range(1950, 2026))
-    print("Exporting ALL " + str(len(_ts)) + " Task 3 frames -> " + _all_dir)
+    print("Exporting " + str(len(_ts)) + " frames -> " + _all_dir)
     for _i, _t in enumerate(_ts):
         scene.AnimationTime = float(_t)
-        UpdatePipeline()
-        Render(view)
+        UpdatePipeline(); Render(view)
         _t_int = int(round(_t))
         _png = _all_dir + "/frame_" + str(_i).zfill(2) + "_t" + str(_t_int) + ".png"
         SaveScreenshot(_png, view, ImageResolution=[1920, 1080])
-        print("  [" + str(_i+1) + "/" + str(len(_ts)) + "] year " + str(_t_int))
+        if (_i % 10 == 0) or (_i == len(_ts) - 1):
+            print("  [" + str(_i+1) + "/" + str(len(_ts)) + "] year " + str(_t_int))
     print("Done. Run deploy_task0_and_3_frames.py to convert to WebP.")
