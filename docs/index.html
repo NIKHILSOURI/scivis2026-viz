@@ -216,8 +216,9 @@ footer {
 <nav>
   <div class="nav-logo"><span>SciVis</span> 2026</div>
   <div class="nav-links">
-    <a href="#task0">Climate Field</a>
-    <a href="#task1">Atmospheric</a>
+    <a href="#datasets">Data</a>
+    <a href="#task0">Task 0</a>
+    <a href="#task1">Task 1</a>
     <a href="#cross">Cross-Task</a>
     <a href="#videos">Video</a>
     <a href="#findings">Findings</a>
@@ -244,32 +245,59 @@ footer {
 
 <div class="color-bar"></div>
 
-<!-- TASK 0 + 2 MERGED -->
+<!-- DATASETS -->
+<section id="datasets">
+  <div class="container">
+    <p class="section-label reveal">Datasets</p>
+    <h2 class="reveal">Data Sources</h2>
+    <p class="section-desc reveal">Two complementary NASA-provided datasets underpin all tasks. Together they span 75 years of surface climate and 16 weather-scale atmospheric snapshots at kilometre resolution.</p>
+    <div class="findings-grid">
+      <div class="finding reveal">
+        <div class="f-num">TASK 0 · SURFACE CLIMATE</div>
+        <div class="f-title">NEX-GDDP-CMIP6 / ACCESS-CM2</div>
+        <div class="f-body">Bias-corrected, statistically downscaled surface climate fields (BCSD). 76 annual means from 1950–2025 at 0.25° spatial resolution (~25 km, 1440×600 grid) under the SSP2-4.5 emissions scenario. Three daily fields aggregated to annual means: near-surface air temperature (TAS), precipitation rate (PR), and relative humidity (HURS). Combined into the DHMI compound-stress index: DHMI = 0.4·T̂ + 0.4·(1−P̂) + 0.2·Ĥ, normalized to the full 1950–2025 range.</div>
+      </div>
+      <div class="finding reveal">
+        <div class="f-num">TASK 1 · ATMOSPHERE</div>
+        <div class="f-title">NASA GEOS DYAMOND Jet Stream</div>
+        <div class="f-body">Kilometre-scale global atmospheric simulation at six-hourly cadence. 16 snapshots re-projected via inverse gnomonic projection to a 0.25° longitude–latitude grid (Gaussian post-smoothing σ = 4.5 cells). Captures upper-level jet-stream morphology at weather time-scales — including jet meandering, splitting, and reformation — details unresolvable in annual climate reanalyses. Interpolated to a smooth 100-frame, 10 fps animation for visualization.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="color-bar"></div>
+
+<!-- TASK 0 -->
 <section id="task0">
   <div class="container">
-    <p class="section-label reveal">Task 0 &amp; 2</p>
+    <p class="section-label reveal">Task 0</p>
     <h2 class="reveal">DHMI Field &amp; Topological Analysis</h2>
-    <p class="section-desc reveal">Two views of the same 75-year record. <b>Left – Sweep:</b> the raw DHMI compound-extremes field, one frame per year. <b>Right – Up close:</b> ELS topology showing the Reeb graph and persistence of extreme features via TTK. Drag the shared slider to step both views in sync.</p>
+    <p class="section-desc reveal">Two complementary views of the same 75-year compound-extremes record, controlled by a single shared year slider. The hero thumbnails below mark the four most significant years identified in our analysis.</p>
 
-    <div class="reveal" style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:14px">
-      <div>
-        <div class="browser-label">DHMI Sweep (year by year)</div>
-        <div class="frame-browser">
-          <div class="frame-img-wrap">
-            <img id="t0-img" src="renders/pdf_stills/task0_frames/frame_00_t1950.webp" alt="DHMI 1950">
-          </div>
-        </div>
-      </div>
-      <div>
-        <div class="browser-label">ELS Topology (up close)</div>
-        <div class="frame-browser">
-          <div class="frame-img-wrap">
-            <img id="t2-img" src="renders/anim_combined/frame_0000.webp" alt="ELS 1950">
-          </div>
+    <!-- 0a: DHMI Sweep -->
+    <div class="reveal" style="margin-bottom:40px">
+      <div class="browser-label" style="font-size:13px;color:var(--ink);margin-bottom:4px">0a &nbsp;·&nbsp; DHMI Sweep — Year by Year</div>
+      <p style="font-size:13px;color:var(--ink2);max-width:680px;margin-bottom:12px;line-height:1.6">The Dry-Hot Magnitude Index (DHMI = 0.4·T̂ + 0.4·(1−P̂) + 0.2·Ĥ) combines normalised temperature, precipitation deficit, and humidity anomalies into a single compound-stress scalar per grid cell. Drag through all 76 years to watch hotspots emerge, intensify, and shift poleward — the Amazon and South-East Asian corridors show the strongest long-term accumulation, with the single most intense individual event recorded in 1952 (Amazon, persistence 0.99).</p>
+      <div class="frame-browser">
+        <div class="frame-img-wrap">
+          <img id="t0-img" src="renders/pdf_stills/task0_frames/frame_00_t1950.webp" alt="DHMI 1950">
         </div>
       </div>
     </div>
 
+    <!-- 0b: ELS Topology -->
+    <div class="reveal" style="margin-bottom:20px">
+      <div class="browser-label" style="font-size:13px;color:var(--ink);margin-bottom:4px">0b &nbsp;·&nbsp; ELS Topology — Up Close</div>
+      <p style="font-size:13px;color:var(--ink2);max-width:680px;margin-bottom:12px;line-height:1.6">Extremal Level Sets (ELS) extracted with TTK's persistence diagram (saddle-to-maximum pairs, threshold 0.04) identify ~750 coherent compound-stress hotspots per year. Wasserstein matching links features across consecutive years to reveal their birth, death, merging, and splitting — producing 2,488 continuous tracks over the full 76-year record. The Reeb graph topology (left panel) encodes structural change; the DHMI scalar field (right) gives spatial context.</p>
+      <div class="frame-browser">
+        <div class="frame-img-wrap">
+          <img id="t2-img" src="renders/anim_combined/frame_0000.webp" alt="ELS 1950">
+        </div>
+      </div>
+    </div>
+
+    <!-- Shared controls -->
     <div class="reveal">
       <div class="frame-ctrl">
         <span class="ctrl-label">Year</span>
@@ -474,6 +502,10 @@ function pct(el) {
 }
 document.querySelectorAll('input[type=range]').forEach(el => el.addEventListener('input', () => pct(el)));
 
+// Key year frame indices (from paper): 1950 baseline, 1982 C.America peak,
+// 2006 hero/record compound extreme, 2025 end of record
+const KEY_FRAME_IDX = [0, 32, 56, 75];
+
 // -- TASK 0 + 2 (shared slider) -------------------------------------------
 function updateT0(i) {
   const f = T0_DATA[i];
@@ -483,21 +515,25 @@ function updateT0(i) {
   document.getElementById('t2-img').src =
     'renders/anim_combined/frame_' + String(i).padStart(4,'0') + '.webp';
   pct(document.getElementById('t0-slider'));
-  // active thumbnail: nearest 20-step bucket
+  // active thumbnail: whichever key year is nearest
   const thumbs = document.querySelectorAll('#t0-thumbs .thumb');
-  const activeJ = Math.min(Math.floor(i / 20), thumbs.length - 1);
-  thumbs.forEach((el, j) => el.classList.toggle('active', j === activeJ));
+  let nearest = 0, minDist = Infinity;
+  KEY_FRAME_IDX.forEach((ki, j) => {
+    const d = Math.abs(i - ki);
+    if (d < minDist) { minDist = d; nearest = j; }
+  });
+  thumbs.forEach((el, j) => el.classList.toggle('active', j === nearest));
 }
 
-// Build Task 0 thumbnails (every 20 years = 4 thumbs: 1950,1970,1990,2010)
+// Build Task 0 thumbnails — 4 key years from the paper
 (function() {
   const c = document.getElementById('t0-thumbs');
-  T0_DATA.forEach((f, i) => {
-    if (i % 20 !== 0) return;
+  KEY_FRAME_IDX.forEach((frameIdx, j) => {
+    const f = T0_DATA[frameIdx];
     const d = document.createElement('div');
-    d.className = 'thumb' + (i === 0 ? ' active' : '');
-    d.innerHTML = `<img src="${f.file}" alt="${f.year}" loading="lazy"><div class="thumb-label">${f.year}</div>`;
-    d.onclick = () => { document.getElementById('t0-slider').value = i; updateT0(i); };
+    d.className = 'thumb' + (j === 0 ? ' active' : '');
+    d.innerHTML = '<img src="' + f.file + '" alt="' + f.year + '" loading="lazy"><div class="thumb-label">' + f.year + '</div>';
+    d.onclick = () => { document.getElementById('t0-slider').value = frameIdx; updateT0(frameIdx); };
     c.appendChild(d);
   });
 })();
@@ -533,7 +569,7 @@ const obs = new IntersectionObserver(es => {
 document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
 
 // -- NAV ACTIVE -----------------------------------------------------------
-const SECS = ['task0','task1','cross','videos','findings'];
+const SECS = ['datasets','task0','task1','cross','videos','findings'];
 window.addEventListener('scroll', () => {
   let cur = '';
   SECS.forEach(id => { const s=document.getElementById(id); if(s&&s.getBoundingClientRect().top<=70) cur=id; });
