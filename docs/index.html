@@ -205,7 +205,71 @@ footer {
 .ft-links a { font-size: 12px; color: var(--ink3); text-decoration: none; }
 .ft-links a:hover { color: var(--blue); }
 
-/* â"€â"€ REVEAL â"€â"€ */
+/* ── HAMBURGER (hidden on desktop) ── */
+.nav-hamburger {
+  display: none; flex-direction: column; gap: 5px;
+  cursor: pointer; padding: 8px; border: none; background: none; margin-left: 8px;
+}
+.nav-hamburger span {
+  display: block; width: 22px; height: 2px;
+  background: var(--ink); border-radius: 2px; transition: all 0.2s;
+}
+.nav-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.nav-hamburger.open span:nth-child(2) { opacity: 0; }
+.nav-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* ── TABLET (768–1059px) ── */
+@media (min-width: 768px) and (max-width: 1059px) {
+  nav { padding: 0 20px; }
+  .nav-links a { font-size: 11px; padding: 5px 8px; }
+  section { padding: 48px 20px; }
+  #hero { padding: 52px 20px 44px; }
+  .container { max-width: 100%; }
+}
+
+/* ── MOBILE (<768px) ── */
+@media (max-width: 767px) {
+  nav {
+    padding: 0 16px; flex-wrap: wrap;
+    height: auto; min-height: 52px; position: sticky; top: 0;
+  }
+  .nav-links {
+    display: none; flex-direction: column; gap: 0; order: 10; width: 100%;
+    background: var(--cream2); border-top: 1px solid var(--border);
+    padding: 6px 0;
+  }
+  .nav-links.mob-open { display: flex; }
+  .nav-links a { padding: 10px 20px; font-size: 13px; border-radius: 0; }
+  .nav-hamburger { display: flex; }
+  .nav-gh { font-size: 10px; padding: 4px 10px; }
+  .nav-logo { font-size: 13px; }
+
+  section { padding: 36px 16px; }
+  #hero { padding: 40px 16px 32px; }
+  .hero-desc { font-size: 14px; }
+  h2 { font-size: clamp(20px, 5.5vw, 28px); }
+
+  input[type=range]::-webkit-slider-thumb {
+    width: 28px; height: 28px;
+  }
+  input[type=range]::-moz-range-thumb {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--blue); border: 3px solid var(--cream); cursor: pointer;
+  }
+
+  .frame-ctrl { gap: 10px; padding: 10px 12px; }
+  .ctrl-label { font-size: 11px; }
+  .frame-badge { font-size: 13px; min-width: 54px; padding: 4px 10px; }
+
+  .thumb { min-width: 64px; max-width: 140px; }
+  .findings-grid { grid-template-columns: 1fr; }
+  .vid-grid { grid-template-columns: 1fr; }
+
+  .section-desc { font-size: 13px; }
+  .info-box { margin-top: 4px; }
+}
+
+/* ── REVEAL â"€â"€ */
 .reveal { opacity: 0; transform: translateY(18px); transition: opacity 0.5s ease, transform 0.5s ease; }
 .reveal.visible { opacity: 1; transform: none; }
 
@@ -236,7 +300,13 @@ footer {
 <!-- NAV -->
 <nav>
   <div class="nav-logo"><span>SciVis</span> 2026 &nbsp;<span style="font-size:10px;font-weight:500;color:var(--blue);opacity:0.85">Finalist</span></div>
-  <div class="nav-links">
+  <div style="display:flex;align-items:center;gap:6px;margin-left:auto">
+    <a href="https://github.com/NIKHILSOURI/scivis2026-viz" target="_blank" class="nav-gh">GitHub ↗</a>
+    <button class="nav-hamburger" id="nav-ham" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <div class="nav-links" id="nav-links">
     <a href="#datasets">Data</a>
     <a href="#task0">Task 0</a>
     <a href="#task1">Task 1</a>
@@ -244,7 +314,6 @@ footer {
     <a href="#videos">Video</a>
     <a href="#findings">Findings</a>
   </div>
-  <a href="https://github.com/NIKHILSOURI/scivis2026-viz" target="_blank" class="nav-gh">GitHub ↗</a>
 </nav>
 
 <!-- HERO -->
@@ -516,7 +585,7 @@ footer {
     <div class="ft-x">×</div>
     <div class="ft-inst"><span>BTH</span> Sweden</div>
   </div>
-  <div class="ft-title">Nikhil Souri · Raghavendra · Prashant – IIIT Hyderabad &nbsp;|&nbsp; Collaborators – BTH Blekinge Institute of Technology</div>
+  <div class="ft-title">Nikhil Souri · Raghavendra · Prashant – IIIT Hyderabad &nbsp;|&nbsp; BTH Blekinge Institute of Technology</div>
   <div class="ft-ieee">IEEE SciVis Contest 2026 · Finalist · IEEE VIS 2026 Boston</div>
   <div class="ft-links">
     <a href="https://github.com/NIKHILSOURI/scivis2026-viz" target="_blank">GitHub Repository</a>
@@ -670,6 +739,24 @@ document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
         }
       };
       img.src = src;
+    });
+  });
+})();
+
+// -- MOBILE NAV HAMBURGER -------------------------------------------------
+(function() {
+  var ham = document.getElementById('nav-ham');
+  var links = document.getElementById('nav-links');
+  if (!ham || !links) return;
+  ham.addEventListener('click', function() {
+    ham.classList.toggle('open');
+    links.classList.toggle('mob-open');
+  });
+  // close menu when any nav link is tapped
+  links.querySelectorAll('a').forEach(function(a) {
+    a.addEventListener('click', function() {
+      ham.classList.remove('open');
+      links.classList.remove('mob-open');
     });
   });
 })();
