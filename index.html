@@ -260,17 +260,17 @@ footer {
   <div class="container">
     <p class="section-label reveal">Task 0</p>
     <h2 class="reveal">DHMI — Compound Extremes Field</h2>
-    <p class="section-desc reveal">DHMI = 0.4·T̂ + 0.4·(1−P̂) + 0.2·Ĥ combines temperature, precipitation, and humidity anomalies. Drag the slider through all 76 years (1950–2025) to watch compound extremes evolve.</p>
+    <p class="section-desc reveal">DHMI = 0.4·T̂ + 0.4·(1−P̂) + 0.2·Ĥ combines temperature, precipitation, and humidity anomalies. Drag the slider to step through five key years from the 75-year record.</p>
 
     <div class="task-split reveal">
       <div>
         <div class="frame-browser">
           <div class="frame-img-wrap">
-            <img id="t0-img" src="docs/renders/pdf_stills/task0_frames/frame_00_t1950.webp" alt="DHMI 1950">
+            <img id="t0-img" src="docs/renders/pdf_stills/task0/combined_1950.webp" alt="DHMI 1950">
           </div>
           <div class="frame-ctrl">
             <span class="ctrl-label">Year</span>
-            <input type="range" id="t0-slider" min="0" max="75" value="0" oninput="updateT0(+this.value)">
+            <input type="range" id="t0-slider" min="0" max="4" value="0" oninput="updateT0(+this.value)">
             <div class="frame-badge" id="t0-badge">1950</div>
           </div>
         </div>
@@ -286,7 +286,9 @@ footer {
         <hr class="divider">
         <div class="info-title">Selected Year</div>
         <div class="event-year" id="t0-year-disp" style="color:var(--ink)">1950</div>
-        <div class="info-row" style="font-size:13px;margin-top:4px;color:var(--ink3)">Drag to explore all 76 years. Compound extremes intensify from the 1950 baseline toward the peak <span style="color:var(--red)">2006</span> event and remain elevated through 2025.</div>
+        <div class="info-row" id="t0-evt" style="font-size:13px;margin-top:4px">Baseline — calm conditions</div>
+        <div class="persist-bar"><div class="persist-fill" id="t0-pbar" style="width:68%"></div></div>
+        <div style="font-size:11px;color:var(--ink3);margin-top:5px;font-family:var(--font-mono)" id="t0-plabel">Persistence: 0.68</div>
       </div>
     </div>
   </div>
@@ -412,17 +414,17 @@ footer {
   <div class="container">
     <p class="section-label reveal">Task 3</p>
     <h2 class="reveal">Ocean–Atmosphere Connection</h2>
-    <p class="section-desc reveal">DHMI compound extremes index with jet-stream overlay — the ocean–atmosphere physical link behind surface events. Drag through all 76 years (1950–2025).</p>
+    <p class="section-desc reveal">Gulf Stream SST anomalies drive moisture transport and jet stream displacement — the physical link behind compound extremes on land. Five key years across the 75-year record.</p>
 
     <div class="task-split reveal">
       <div>
         <div class="frame-browser">
           <div class="frame-img-wrap">
-            <img id="t3-img" src="docs/renders/pdf_stills/task3_frames/frame_00_t1950.webp" alt="Cross-task 1950">
+            <img id="t3-img" src="docs/renders/pdf_stills/cross_task/frame_00_yr1950.webp" alt="Cross-task 1950">
           </div>
           <div class="frame-ctrl">
             <span class="ctrl-label">Year</span>
-            <input type="range" id="t3-slider" min="0" max="75" value="0" oninput="updateT3(+this.value)">
+            <input type="range" id="t3-slider" min="0" max="4" value="0" oninput="updateT3(+this.value)">
             <div class="frame-badge" id="t3-badge">1950</div>
           </div>
         </div>
@@ -520,11 +522,13 @@ footer {
 <script>
 // ── DATA DEFINITIONS ───────────────────────────────────────────────────
 const BASE = 'docs/renders/';
-const T0_DATA = Array.from({length:76}, (_,i) => ({
-  file: BASE+'pdf_stills/task0_frames/frame_'+String(i).padStart(2,'0')+'_t'+(1950+i)+'.webp',
-  year: 1950+i
-}));
-const T0_KEY = [{idx:0,year:1950},{idx:19,year:1969},{idx:38,year:1988},{idx:56,year:2006},{idx:75,year:2025}];
+const T0_DATA = [
+  { file: BASE+'pdf_stills/task0/combined_1950.webp', year:1950, event:'Baseline — calm conditions',               persist:0.68 },
+  { file: BASE+'pdf_stills/task0/combined_1969.webp', year:1969, event:'Early warming signal',                     persist:0.74 },
+  { file: BASE+'pdf_stills/task0/combined_1988.webp', year:1988, event:'ENSO-driven compound extreme',              persist:0.82 },
+  { file: BASE+'pdf_stills/task0/combined_2006.webp', year:2006, event:'Peak — highest DHMI persistence on record', persist:0.98 },
+  { file: BASE+'pdf_stills/task0/combined_2025.webp', year:2025, event:'End of record — elevated baseline',         persist:0.91 },
+];
 // Generate all frame filenames: frame_NN_tN.png (N = sequential integer timestep)
 function makeFrames(count) {
   return Array.from({length: count}, (_, i) => ({
@@ -547,10 +551,13 @@ function preloadNeighbors(base, frames, i) {
     if (j >= 0 && j < frames.length) preload(base + frames[j].file);
   });
 }
-const T3_DATA = Array.from({length:76}, (_,i) => ({
-  file: BASE+'pdf_stills/task3_frames/frame_'+String(i).padStart(2,'0')+'_t'+(1950+i)+'.webp',
-  label: String(1950+i)
-}));
+const T3_DATA = [
+  { file: BASE+'pdf_stills/cross_task/frame_00_yr1950.webp', label:'1950' },
+  { file: BASE+'pdf_stills/cross_task/frame_01_yr1969.webp', label:'1969' },
+  { file: BASE+'pdf_stills/cross_task/frame_02_yr1988.webp', label:'1988' },
+  { file: BASE+'pdf_stills/cross_task/frame_03_yr2006.webp', label:'2006' },
+  { file: BASE+'pdf_stills/cross_task/frame_04_yr2025.webp', label:'2025' },
+];
 
 // ── SLIDER FILL UTILITY ────────────────────────────────────────────────
 function pct(el) {
@@ -564,19 +571,20 @@ function updateT0(i) {
   document.getElementById('t0-img').src = f.file;
   document.getElementById('t0-badge').textContent = f.year;
   document.getElementById('t0-year-disp').textContent = f.year;
-  document.getElementById('t0-year-disp').style.color = f.year === 2006 ? 'var(--red)' : 'var(--ink)';
+  document.getElementById('t0-year-disp').style.color = i===3 ? 'var(--red)' : 'var(--ink)';
+  document.getElementById('t0-evt').textContent = f.event;
+  document.getElementById('t0-pbar').style.width = (f.persist*100)+'%';
+  document.getElementById('t0-plabel').textContent = 'Persistence: '+f.persist.toFixed(2);
   pct(document.getElementById('t0-slider'));
-  document.querySelectorAll('#t0-thumbs .thumb').forEach((el,j) =>
-    el.classList.toggle('active', T0_KEY[j] && T0_KEY[j].idx === i));
+  document.querySelectorAll('#t0-thumbs .thumb').forEach((el,j) => el.classList.toggle('active', j===i));
 }
 (function() {
   const c = document.getElementById('t0-thumbs');
-  T0_KEY.forEach((k, j) => {
-    const f = T0_DATA[k.idx];
+  T0_DATA.forEach((f, i) => {
     const d = document.createElement('div');
-    d.className = 'thumb' + (j===0?' active':'');
-    d.innerHTML = `<img src="${f.file}" alt="${k.year}" loading="lazy"><div class="thumb-label">${k.year}</div>`;
-    d.onclick = () => { document.getElementById('t0-slider').value = k.idx; updateT0(k.idx); };
+    d.className = 'thumb' + (i===0?' active':'');
+    d.innerHTML = `<img src="${f.file}" alt="${f.year}" loading="lazy"><div class="thumb-label">${f.year}</div>`;
+    d.onclick = () => { document.getElementById('t0-slider').value = i; updateT0(i); };
     c.appendChild(d);
   });
 })();
