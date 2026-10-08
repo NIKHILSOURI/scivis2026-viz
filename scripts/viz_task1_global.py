@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-# Task 1 — global jet-stream visualization, 16 timesteps
+﻿#!/usr/bin/env python
+# Task 1 â€” global jet-stream visualization, 16 timesteps
 # ParaView: View > Python Shell > Run Script
 from paraview.simple import *
 import os
@@ -7,7 +7,9 @@ import os
 # ---- CHANGE THIS to wherever you put the sample_for_prof folder ----
 B = "D:/STUDY/RESEARCH WORKS/IIIT HYD/sciviscontest2026/##ParaView_New"
 # --------------------------------------------------------------------
-RAYTRACING = False  # set True ONLY when exporting
+RAYTRACING      = False
+SAVE_PDF_STILLS = True
+PDF_RESOLUTION  = [3840, 2160]
 R = f"{B}/renders"; os.makedirs(R, exist_ok=True)
 G = f"{B}/task1_atmosphere/global"
 
@@ -15,12 +17,12 @@ view = GetActiveViewOrCreate("RenderView")
 view.ViewSize = [2560, 1440]   # 16:9
 view.UseColorPaletteForBackground = 0
 view.BackgroundColorMode = "Single Color"
-view.Background = [0.02, 0.02, 0.05]
+view.Background = [0.96, 0.93, 0.86]
 view.OrientationAxesVisibility = 0
 try: view.UseFXAA = 1
 except Exception: pass
 
-# ── Ray tracing — enabled only when RAYTRACING=True (export mode) ─────────────
+# â”€â”€ Ray tracing â€” enabled only when RAYTRACING=True (export mode) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 if RAYTRACING:
     try:
         view.EnableRayTracing = 1
@@ -40,7 +42,7 @@ if RAYTRACING:
     except Exception as _rte:
         print(f"Ray tracing not available: {_rte}")
 else:
-    print("Ray tracing OFF (interactive mode) — set RAYTRACING=True before exporting")
+    print("Ray tracing OFF (interactive mode) â€” set RAYTRACING=True before exporting")
 
 # wind speed field
 pvd = OpenDataFile(f"{G}/task1_global.pvd")
@@ -57,22 +59,24 @@ lut.RGBPoints = [
      45, 0.95, 0.88, 0.18,   # jet edge   -> yellow
      60, 0.95, 0.48, 0.05,   # jet        -> orange
      80, 0.85, 0.10, 0.05,   # fast jet   -> red
-    100, 1.00, 1.00, 1.00,   # extreme    -> white
+    100, 0.55, 0.00, 0.55,   # extreme    -> deep magenta (visible on cream)
 ]
 lut.ColorSpace = "Lab"
-lut.NanColor   = [0.02, 0.02, 0.05]
+lut.NanColor   = [0.96, 0.93, 0.86]
 
 fd.SetScalarBarVisibility(view, True)
 sb = GetScalarBar(lut, view)
 sb.Title           = "Wind Speed (m/s)"
 sb.ComponentTitle  = ""
-sb.TitleColor      = [0.85, 0.90, 0.95]
-sb.LabelColor      = [0.65, 0.72, 0.80]
+sb.TitleColor      = [0.10, 0.10, 0.10]
+sb.LabelColor      = [0.15, 0.15, 0.15]
 try:
     sb.WindowLocation = "Any Location"
 except Exception: pass
 sb.Position        = [0.935, 0.22]
 sb.ScalarBarLength = 0.55
+try: sb.Interactivity = 0
+except Exception: pass
 
 # jet contour lines at 40 / 60 / 80 m/s
 ct = Contour(Input=pvd)
@@ -88,13 +92,13 @@ ctd = Show(calc_ct, view)
 ColorBy(ctd, ("POINTS", "ContourLevel"))
 clut = GetColorTransferFunction("ContourLevel")
 clut.RGBPoints = [
-    38, 1.00, 1.00, 0.70,   # 40 m/s -> pale yellow
-    40, 1.00, 1.00, 1.00,
-    58, 1.00, 0.92, 0.20,   # 60 m/s -> golden yellow
-    60, 1.00, 1.00, 1.00,
-    78, 1.00, 0.50, 0.00,   # 80 m/s -> orange
-    80, 1.00, 1.00, 1.00,
-    82, 1.00, 0.50, 0.00,
+    38, 0.85, 0.70, 0.00,   # 40 m/s -> dark gold
+    40, 0.10, 0.10, 0.40,   # contour edge -> dark navy
+    58, 0.75, 0.45, 0.00,   # 60 m/s -> dark amber
+    60, 0.10, 0.10, 0.40,   # contour edge -> dark navy
+    78, 0.70, 0.10, 0.00,   # 80 m/s -> dark red-orange
+    80, 0.10, 0.10, 0.40,   # contour edge -> dark navy
+    82, 0.70, 0.10, 0.00,
 ]
 clut.ColorSpace = "RGB"
 ctd.LineWidth = 2.5
@@ -104,8 +108,8 @@ ctd.Opacity   = 1.0
 coast = XMLPolyDataReader(FileName=[f"{G}/world_coastlines.vtp"])
 UpdatePipeline(proxy=coast)
 coast_d = Show(coast, view)
-coast_d.AmbientColor = [0.55, 0.65, 0.75]
-coast_d.DiffuseColor = [0.55, 0.65, 0.75]
+coast_d.AmbientColor = [0.15, 0.20, 0.30]
+coast_d.DiffuseColor = [0.15, 0.20, 0.30]
 coast_d.LineWidth    = 1.3
 coast_d.Opacity      = 0.90
 
@@ -118,10 +122,10 @@ borders_d.DiffuseColor = [0.28, 0.36, 0.46]
 borders_d.LineWidth    = 0.8
 borders_d.Opacity      = 0.70
 
-# 2D streamlines — wind trajectories
+# 2D streamlines â€” wind trajectories
 tracer = StreamTracer(Input=pvd, SeedType="Point Cloud")
 tracer.Vectors                  = ["POINTS", "Wind_ms"]
-tracer.MaximumStreamlineLength  = 120.0   # degrees — enough to trace a jet arc
+tracer.MaximumStreamlineLength  = 120.0   # degrees â€” enough to trace a jet arc
 tracer.IntegrationDirection     = "BOTH"
 tracer.IntegratorType           = "Runge-Kutta 4-5"
 tracer.MaximumError             = 1e-6
@@ -156,8 +160,27 @@ cam.SetViewUp(0, 1, 0)
 ResetCamera(view)
 Render(view)
 
-SaveScreenshot(f"{R}/stills/task1_global_hero.png", view, ImageResolution=[2560, 1440])
-print("Saved:", f"{R}/task1_global_hero.png")
+os.makedirs(f"{R}/stills", exist_ok=True)
+SaveScreenshot(f"{R}/stills/task1_global_hero.png", view, ImageResolution=PDF_RESOLUTION)
+print("Saved:", f"{R}/stills/task1_global_hero.png")
 print()
 print("Press Play to animate all 16 timesteps")
 print("Export: File > Save Animation > MP4, 3 fps, 1600x900")
+
+if SAVE_PDF_STILLS:
+    _pdf_dir = f"{R}/pdf_stills/task1_global"
+    os.makedirs(_pdf_dir, exist_ok=True)
+    try:
+        _ts = list(scene.TimeKeeper.TimestepValues)
+    except Exception:
+        _ts = [scene.StartTime + i*(scene.EndTime-scene.StartTime)/15 for i in range(16)]
+    _web_res = [1920, 1080]
+    print(f"\nExporting ALL {len(_ts)} global wind frames  ->  {_pdf_dir}")
+    for _i, _t in enumerate(_ts):
+        scene.AnimationTime = _t; UpdatePipeline(); Render(view)
+        _png = f"{_pdf_dir}/frame_{_i:02d}_t{_t:.0f}.png"
+        SaveScreenshot(_png, view, ImageResolution=_web_res)
+        print(f"  [{_i+1}/{len(_ts)}] t={_t:.1f}")
+    print("Run  python export_pdf.py  to build the master paper PDF")
+
+

@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-# Task 1 — 3D layered atmosphere: 5 altitude shelves, self-lit
+﻿#!/usr/bin/env python
+# Task 1 â€” 3D layered atmosphere: 5 altitude shelves, self-lit
 # ParaView: Python Shell > Reset > Run Script
 from paraview.simple import *
 import os
@@ -7,7 +7,9 @@ import os
 # ---- CHANGE THIS to wherever you put the sample_for_prof folder ----
 B = "D:/STUDY/RESEARCH WORKS/IIIT HYD/sciviscontest2026/##ParaView_New"
 # --------------------------------------------------------------------
-RAYTRACING = False  # set True ONLY when exporting
+RAYTRACING      = False
+SAVE_PDF_STILLS = True
+PDF_RESOLUTION  = [3840, 2160]
 R = f"{B}/renders"; os.makedirs(R, exist_ok=True)
 
 Z_STEP = 40.0
@@ -23,12 +25,12 @@ view = GetActiveViewOrCreate("RenderView")
 view.ViewSize                     = [2560, 1440]
 view.UseColorPaletteForBackground = 0
 view.BackgroundColorMode          = "Single Color"
-view.Background                   = [0.02, 0.02, 0.05]
+view.Background                   = [0.96, 0.93, 0.86]
 view.OrientationAxesVisibility    = 0
 try: view.UseFXAA = 1
 except Exception: pass
 
-# ── Ray tracing — enabled only when RAYTRACING=True (export mode) ─────────────
+# â”€â”€ Ray tracing â€” enabled only when RAYTRACING=True (export mode) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 if RAYTRACING:
     try:
         view.EnableRayTracing = 1
@@ -48,12 +50,12 @@ if RAYTRACING:
     except Exception as _rte:
         print(f"Ray tracing not available: {_rte}")
 else:
-    print("Ray tracing OFF (interactive mode) — set RAYTRACING=True before exporting")
+    print("Ray tracing OFF (interactive mode) â€” set RAYTRACING=True before exporting")
 
 vol = OpenDataFile(f"{B}/task1_atmosphere/global3d/task1_3d.pvd")
 UpdatePipeline()
 
-# colour scale for upper shelves — same theme as task1_global (max 110 m/s here)
+# colour scale for upper shelves â€” same theme as task1_global (max 110 m/s here)
 jlut = GetColorTransferFunction("WindSpeed_ms")
 jlut.RGBPoints = [
       0, 0.12, 0.28, 0.78,   # calm       -> blue
@@ -62,11 +64,11 @@ jlut.RGBPoints = [
      45, 0.95, 0.88, 0.18,   # jet edge   -> yellow
      60, 0.95, 0.48, 0.05,   # jet        -> orange
      80, 0.85, 0.10, 0.05,   # fast jet   -> red
-    100, 1.00, 1.00, 1.00,   # extreme    -> white
+    100, 0.55, 0.00, 0.55,   # extreme    -> white
 ]
 jlut.ColorSpace = "Lab"
 
-# surface layer — separate 0-25 m/s colour scale so it doesn't go black
+# surface layer â€” separate 0-25 m/s colour scale so it doesn't go black
 surf_slice = Slice(Input=vol)
 surf_slice.SliceType = "Plane"
 surf_slice.SliceType.Origin = [0.0, 0.0, 0.0]
@@ -92,7 +94,7 @@ sd.Opacity = 1.0
 sd.Ambient = 1.0; sd.Diffuse = 0.0            # self-lit: full brightness
 RenameSource("L0_SURFACE", calc)
 
-# upper shelves — threshold out the calm air at each level
+# upper shelves â€” threshold out the calm air at each level
 last = None
 for k, (z, min_spd, label) in enumerate(LAYERS[1:], start=1):
     sl = Slice(Input=vol)
@@ -118,22 +120,26 @@ last.SetScalarBarVisibility(view, True)
 jsb = GetScalarBar(jlut, view)
 jsb.Title = "Wind Speed aloft (m/s)"
 jsb.ComponentTitle = ""
-jsb.TitleColor = [0.85, 0.85, 0.85]; jsb.LabelColor = [0.62, 0.62, 0.62]
+jsb.TitleColor = [0.10, 0.10, 0.10]; jsb.LabelColor = [0.62, 0.62, 0.62]
 try:
     jsb.WindowLocation = "Any Location"
 except Exception: pass
 jsb.Position = [0.935, 0.50]; jsb.ScalarBarLength = 0.36
 
+try: jsb.Interactivity = 0
+except Exception: pass
 sd.SetScalarBarVisibility(view, True)
 ssb = GetScalarBar(slut, view)
 ssb.Title = "Surface wind (m/s)"
 ssb.ComponentTitle = ""
-ssb.TitleColor = [0.85, 0.85, 0.85]; ssb.LabelColor = [0.62, 0.62, 0.62]
+ssb.TitleColor = [0.10, 0.10, 0.10]; ssb.LabelColor = [0.62, 0.62, 0.62]
 try:
     ssb.WindowLocation = "Any Location"
 except Exception: pass
 ssb.Position = [0.935, 0.10]; ssb.ScalarBarLength = 0.28
 
+try: ssb.Interactivity = 0
+except Exception: pass
 # bounding box
 ob = Show(vol, view)
 ob.SetRepresentationType("Outline")
@@ -154,8 +160,8 @@ try:
     stube.Radius = 0.4; stube.NumberofSides = 8
     UpdatePipeline(proxy=stube)
     std = Show(stube, view)
-    std.AmbientColor   = [0.92, 0.95, 1.00]         # light silver, not dark blue
-    std.DiffuseColor   = [0.92, 0.95, 1.00]
+    std.AmbientColor   = [0.30, 0.35, 0.50]         # light silver, not dark blue
+    std.DiffuseColor   = [0.30, 0.35, 0.50]
     std.ColorArrayName = ["POINTS", ""]
     std.Opacity = 0.45
     std.Ambient = 1.0; std.Diffuse = 0.0
@@ -172,12 +178,12 @@ if os.path.exists(coast):
         tf.Transform.Translate = [0.0, 0.0, z]
         UpdatePipeline(proxy=tf)
         dd = Show(tf, view)
-        dd.AmbientColor = [0.75, 0.80, 0.88]; dd.DiffuseColor = [0.75, 0.80, 0.88]
+        dd.AmbientColor = [0.25, 0.30, 0.45]; dd.DiffuseColor = [0.25, 0.30, 0.45]
         dd.LineWidth = 1.3; dd.Opacity = op
         dd.ColorArrayName = ["POINTS", ""]
         dd.Ambient = 1.0; dd.Diffuse = 0.0
 
-# floating labels — use Translation not Position (Position crashes PV 6.1.1)
+# floating labels â€” use Translation not Position (Position crashes PV 6.1.1)
 for k, (z, _m, label) in enumerate(LAYERS):
     try:
         t3 = Text3D()
@@ -185,22 +191,13 @@ for k, (z, _m, label) in enumerate(LAYERS):
         td = Show(t3, view)
         td.Scale       = [9.0, 9.0, 9.0]
         td.Translation = [-330.0, 95.0, z]
-        td.AmbientColor = [0.90, 0.92, 1.00]
-        td.DiffuseColor = [0.90, 0.92, 1.00]
+        td.AmbientColor = [0.30, 0.35, 0.50]
+        td.DiffuseColor = [0.30, 0.35, 0.50]
         td.Ambient = 1.0; td.Diffuse = 0.0
         td.Opacity = 0.95
     except Exception as e:
         print(f"Label '{label}' skipped: {e}")
 
-# title
-try:
-    ttl = Text()
-    ttl.Text = ("The atmosphere layer by layer: wind speed grows ~5x with altitude\n"
-                "The jet stream exists ONLY aloft: bottom calm, top glowing")
-    tdd = Show(ttl, view)
-    tdd.FontSize = 24; tdd.Color = [0.94, 0.94, 0.94]
-    tdd.WindowLocation = "Upper Left Corner"
-except Exception: pass
 
 # camera
 view.CameraParallelProjection = 0
@@ -213,6 +210,25 @@ view.CameraViewAngle = 30
 scene = GetAnimationScene()
 scene.UpdateAnimationUsingDataTimeSteps()
 Render(view)
-SaveScreenshot(f"{R}/figures/task1_3d_layers.png", view, ImageResolution=[2560, 1440])
-print(f"Saved: {R}/task1_3d_layers.png")
+os.makedirs(f"{R}/stills", exist_ok=True)
+SaveScreenshot(f"{R}/stills/task1_3d_layers.png", view, ImageResolution=PDF_RESOLUTION)
+print(f"Saved: {R}/stills/task1_3d_layers.png")
 print("Press Play: 20 timesteps. Export: MP4, 4 fps -> task1_3d.mp4")
+
+if SAVE_PDF_STILLS:
+    _pdf_dir = f"{R}/pdf_stills/task1_3d"
+    os.makedirs(_pdf_dir, exist_ok=True)
+    try:
+        _ts = list(scene.TimeKeeper.TimestepValues)
+    except Exception:
+        _ts = [scene.StartTime + i*(scene.EndTime-scene.StartTime)/19 for i in range(20)]
+    _web_res = [1920, 1080]
+    print(f"\nExporting ALL {len(_ts)} 3D atmosphere frames  ->  {_pdf_dir}")
+    for _i, _t in enumerate(_ts):
+        scene.AnimationTime = _t; UpdatePipeline(); Render(view)
+        _png = f"{_pdf_dir}/frame_{_i:02d}_t{_t:.0f}.png"
+        SaveScreenshot(_png, view, ImageResolution=_web_res)
+        print(f"  [{_i+1}/{len(_ts)}] t={_t:.1f}")
+    print("Run  python export_pdf.py  to build the master paper PDF")
+
+
