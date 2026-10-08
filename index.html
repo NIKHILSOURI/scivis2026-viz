@@ -332,14 +332,14 @@ footer {
     <!-- Global Wind Field -->
     <div class="anim-split reveal">
       <div>
-        <div class="browser-label">Global Wind Field â€” 16 timesteps</div>
+        <div class="browser-label">Global Wind Field — 20 timesteps</div>
         <div class="frame-browser">
           <div class="frame-img-wrap">
             <img id="t1-gl-img" src="docs/renders/pdf_stills/task1_global/frame_00_t0.webp" alt="Task 1 Global">
           </div>
           <div class="frame-ctrl">
             <span class="ctrl-label">Step</span>
-            <input type="range" id="t1-gl-slider" min="0" max="15" value="0" oninput="updateT1_gl(+this.value)">
+            <input type="range" id="t1-gl-slider" min="0" max="19" value="0" oninput="updateT1_gl(+this.value)">
             <div class="frame-badge" id="t1-gl-badge">t = 0</div>
           </div>
         </div>
@@ -537,7 +537,7 @@ function makeFrames(count) {
   }));
 }
 const T1_3D_FRAMES  = makeFrames(20);
-const T1_GL_FRAMES  = makeFrames(16);
+const T1_GL_FRAMES  = makeFrames(20);
 const T1_JET_FRAMES = makeFrames(100);
 
 // Preload cache
@@ -654,3 +654,4 @@ window.addEventListener('scroll', () => {
 </script>
 </body>
 </html>
+
