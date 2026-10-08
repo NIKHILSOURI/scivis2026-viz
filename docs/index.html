@@ -261,7 +261,7 @@ footer {
           </div>
           <div class="frame-ctrl">
             <span class="ctrl-label">Year</span>
-            <input type="range" id="t0-slider" min="0" max="4" value="0" oninput="updateT0(+this.value)">
+            <input type="range" id="t0-slider" min="0" max="75" value="0" oninput="updateT0(+this.value)">
             <div class="frame-badge" id="t0-badge">1950</div>
           </div>
         </div>
@@ -303,7 +303,7 @@ footer {
           </div>
           <div class="frame-ctrl">
             <span class="ctrl-label">Step</span>
-            <input type="range" id="t1-3d-slider" min="0" max="4" value="0" oninput="updateT1_3d(+this.value)">
+            <input type="range" id="t1-3d-slider" min="0" max="19" value="0" oninput="updateT1_3d(+this.value)">
             <div class="frame-badge" id="t1-3d-badge">t = 0</div>
           </div>
         </div>
@@ -316,7 +316,7 @@ footer {
           </div>
           <div class="frame-ctrl">
             <span class="ctrl-label">Step</span>
-            <input type="range" id="t1-gl-slider" min="0" max="4" value="0" oninput="updateT1_gl(+this.value)">
+            <input type="range" id="t1-gl-slider" min="0" max="15" value="0" oninput="updateT1_gl(+this.value)">
             <div class="frame-badge" id="t1-gl-badge">t = 0</div>
           </div>
         </div>
@@ -331,7 +331,7 @@ footer {
         </div>
         <div class="frame-ctrl">
           <span class="ctrl-label">Step</span>
-          <input type="range" id="t1-jet-slider" min="0" max="4" value="0" oninput="updateT1_jet(+this.value)">
+          <input type="range" id="t1-jet-slider" min="0" max="99" value="0" oninput="updateT1_jet(+this.value)">
           <div class="frame-badge" id="t1-jet-badge">t = 0</div>
         </div>
       </div>
@@ -380,7 +380,7 @@ footer {
           </div>
           <div class="frame-ctrl">
             <span class="ctrl-label">Year</span>
-            <input type="range" id="t3-slider" min="0" max="4" value="0" oninput="updateT3(+this.value)">
+            <input type="range" id="t3-slider" min="0" max="75" value="0" oninput="updateT3(+this.value)">
             <div class="frame-badge" id="t3-badge">1950</div>
           </div>
         </div>
@@ -418,15 +418,15 @@ footer {
       </div>
       <div class="vid-card reveal">
         <div class="vid-card-label"><span class="vid-task-tag">Task 1</span> 3D Atmosphere Layers</div>
-        <div class="vid-wrap"><video src="renders/29th/viz_task1_3d.mp4" controls muted preload="none" poster="renders/pdf_stills/task1_3d/frame_02_t10.webp"></video></div>
+        <div class="vid-wrap"><video src="renders/29th/viz_task1_3d.mp4" controls muted preload="none" poster="renders/pdf_stills/task1_3d/frame_02_t2.webp"></video></div>
       </div>
       <div class="vid-card reveal">
         <div class="vid-card-label"><span class="vid-task-tag">Task 1</span> Global Wind Field</div>
-        <div class="vid-wrap"><video src="renders/29th/viz_task1_global.mp4" controls muted preload="none" poster="renders/pdf_stills/task1_global/frame_02_t8.webp"></video></div>
+        <div class="vid-wrap"><video src="renders/29th/viz_task1_global.mp4" controls muted preload="none" poster="renders/pdf_stills/task1_global/frame_02_t2.webp"></video></div>
       </div>
       <div class="vid-card reveal">
         <div class="vid-card-label"><span class="vid-task-tag">Task 1</span> Jet Stream (100 frames)</div>
-        <div class="vid-wrap"><video src="renders/29th/viz_task1_jet100.mp4" controls muted preload="none" poster="renders/pdf_stills/task1_jet100/frame_02_t50.webp"></video></div>
+        <div class="vid-wrap"><video src="renders/29th/viz_task1_jet100.mp4" controls muted preload="none" poster="renders/pdf_stills/task1_jet100/frame_02_t2.webp"></video></div>
       </div>
       <div class="vid-card reveal">
         <div class="vid-card-label"><span class="vid-task-tag">Task 2</span> Persistence Diagram Evolution</div>
@@ -496,26 +496,20 @@ footer {
 
 <script>
 // â”€â”€ DATA DEFINITIONS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-const T0_DATA = [
-  { file:'renders/pdf_stills/task0/combined_1950.webp', year:1950, event:'Baseline â€” calm conditions',              persist:0.68 },
-  { file:'renders/pdf_stills/task0/combined_1969.webp', year:1969, event:'Early warming signal',                    persist:0.74 },
-  { file:'renders/pdf_stills/task0/combined_1988.webp', year:1988, event:'ENSO-driven compound extreme',             persist:0.82 },
-  { file:'renders/pdf_stills/task0/combined_2006.webp', year:2006, event:'Peak â€” highest DHMI persistence on record', persist:0.98 },
-  { file:'renders/pdf_stills/task0/combined_2025.webp', year:2025, event:'End of record â€” elevated baseline',        persist:0.91 },
-];
-const T1_3D_FILES  = ['frame_00_t0','frame_01_t5','frame_02_t10','frame_03_t14','frame_04_t19'];
-const T1_3D_LABELS = ['t = 0','t = 5','t = 10','t = 14','t = 19'];
-const T1_GL_FILES  = ['frame_00_t0','frame_01_t4','frame_02_t8','frame_03_t11','frame_04_t15'];
-const T1_GL_LABELS = ['t = 0','t = 4','t = 8','t = 11','t = 15'];
-const T1_JET_FILES  = ['frame_00_t0','frame_01_t25','frame_02_t50','frame_03_t74','frame_04_t99'];
-const T1_JET_LABELS = ['t = 0','t = 25','t = 50','t = 74','t = 99'];
-const T3_DATA = [
-  { file:'renders/pdf_stills/cross_task/frame_00_yr1950.webp', label:'1950' },
-  { file:'renders/pdf_stills/cross_task/frame_01_yr1969.webp', label:'1969' },
-  { file:'renders/pdf_stills/cross_task/frame_02_yr1988.webp', label:'1988' },
-  { file:'renders/pdf_stills/cross_task/frame_03_yr2006.webp', label:'2006' },
-  { file:'renders/pdf_stills/cross_task/frame_04_yr2025.webp', label:'2025' },
-];
+const T0_DATA = Array.from({length:76}, (_,i) => ({
+  file: 'renders/pdf_stills/task0_frames/frame_' + String(i).padStart(2,'0') + '_t' + (1950+i) + '.webp',
+  year: 1950+i
+}));
+const T1_3D_FILES  = Array.from({length:20}, (_,i) => 'frame_' + String(i).padStart(2,'0') + '_t' + i);
+const T1_3D_LABELS = Array.from({length:20}, (_,i) => 't = ' + i);
+const T1_GL_FILES  = Array.from({length:16}, (_,i) => 'frame_' + String(i).padStart(2,'0') + '_t' + i);
+const T1_GL_LABELS = Array.from({length:16}, (_,i) => 't = ' + i);
+const T1_JET_FILES  = Array.from({length:100}, (_,i) => 'frame_' + String(i).padStart(2,'0') + '_t' + i);
+const T1_JET_LABELS = Array.from({length:100}, (_,i) => 't = ' + i);
+const T3_DATA = Array.from({length:76}, (_,i) => ({
+  file: 'renders/pdf_stills/task3_frames/frame_' + String(i).padStart(2,'0') + '_t' + (1950+i) + '.webp',
+  label: String(1950+i)
+}));
 
 // â”€â”€ SLIDER FILL UTILITY â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function pct(el) {
@@ -529,18 +523,18 @@ function updateT0(i) {
   document.getElementById('t0-img').src = f.file;
   document.getElementById('t0-badge').textContent = f.year;
   document.getElementById('t0-year-disp').textContent = f.year;
-  document.getElementById('t0-year-disp').style.color = i===3 ? 'var(--red)' : 'var(--ink)';
-  document.getElementById('t0-evt').textContent = f.event;
-  document.getElementById('t0-pbar').style.width = (f.persist*100)+'%';
-  document.getElementById('t0-plabel').textContent = 'Persistence: '+f.persist.toFixed(2);
+  document.getElementById('t0-year-disp').style.color = (f.year >= 2000) ? 'var(--red)' : 'var(--ink)';
+  const evtEl = document.getElementById('t0-evt');
+  if (evtEl) evtEl.textContent = f.year + ' climate field';
   pct(document.getElementById('t0-slider'));
   document.querySelectorAll('#t0-thumbs .thumb').forEach((el,j) => el.classList.toggle('active', j===i));
 }
 
-// Build Task 0 thumbnails
+// Build Task 0 thumbnails (every 5 years = 16 thumbs)
 (function() {
   const c = document.getElementById('t0-thumbs');
   T0_DATA.forEach((f, i) => {
+    if (i % 5 !== 0) return;
     const d = document.createElement('div');
     d.className = 'thumb' + (i===0?' active':'');
     d.innerHTML = `<img src="${f.file}" alt="${f.year}" loading="lazy"><div class="thumb-label">${f.year}</div>`;

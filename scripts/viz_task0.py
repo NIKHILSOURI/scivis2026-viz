@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+﻿#!/usr/bin/env python
 # Task 0 - DHMI compound extremes field 1950-2025
 # ParaView: View > Python Shell > Reset > Run Script
 #

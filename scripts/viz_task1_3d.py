@@ -50,7 +50,7 @@ if RAYTRACING:
     except Exception as _rte:
         print(f"Ray tracing not available: {_rte}")
 else:
-    print("Ray tracing OFF (interactive mode) â€" set RAYTRACING=True before exporting")
+    print("Ray tracing OFF (interactive mode) -- set RAYTRACING=True before exporting")
 
 vol = OpenDataFile(f"{B}/task1_atmosphere/global3d/task1_3d.pvd")
 UpdatePipeline()

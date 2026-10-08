@@ -41,7 +41,7 @@ if RAYTRACING:
     except Exception as _rte:
         print(f"Ray tracing not available: {_rte}")
 else:
-    print("Ray tracing OFF (interactive mode) â€" set RAYTRACING=True before exporting")
+    print("Ray tracing OFF (interactive mode) -- set RAYTRACING=True before exporting")
 
 jet = OpenDataFile(f"{B}/task1_atmosphere/jet100/jet100.pvd")
 UpdatePipeline()
@@ -117,7 +117,10 @@ if SAVE_PDF_STILLS:
     _web_res = [1920, 1080]
     print(f"\nExporting ALL {len(_ts)} jet100 frames  ->  {_pdf_dir}")
     for _i, _t in enumerate(_ts):
-        scene.AnimationTime = _t; UpdatePipeline(); Render(view)
+        scene.AnimationTime = _t; UpdatePipeline()
+        cam.SetPosition(0, 0, 1); cam.SetFocalPoint(0, 0, 0)
+        cam.SetViewUp(0, 1, 0); cam.SetParallelScale(103)
+        Render(view)
         _png = f"{_pdf_dir}/frame_{_i:02d}_t{_t:.0f}.png"
         SaveScreenshot(_png, view, ImageResolution=_web_res)
         print(f"  [{_i+1}/{len(_ts)}] t={_t:.1f}")
