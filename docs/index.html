@@ -109,7 +109,7 @@ h2 {
 .frame-browser { display: grid; gap: 10px; }
 .frame-img-wrap {
   background: var(--cream2); border: 1px solid var(--border);
-  border-radius: 12px; overflow: hidden; line-height: 0;
+  border-radius: 12px; overflow: hidden; line-height: 0; position: relative;
 }
 .frame-img-wrap img { width: 100%; display: block; height: auto; }
 .frame-ctrl {
@@ -208,6 +208,27 @@ footer {
 /* â"€â"€ REVEAL â"€â"€ */
 .reveal { opacity: 0; transform: translateY(18px); transition: opacity 0.5s ease, transform 0.5s ease; }
 .reveal.visible { opacity: 1; transform: none; }
+
+/* â"€â"€ LOADING OVERLAYS â"€â"€ */
+.load-overlay {
+  position: absolute; inset: 0;
+  background: rgba(245,237,219,0.96);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  z-index: 5; border-radius: 12px;
+  transition: opacity 0.5s ease;
+}
+.load-overlay.done { opacity: 0; pointer-events: none; }
+.load-bar-label {
+  font-family: var(--font-head); font-size: 11px; color: var(--ink2);
+  margin-bottom: 10px; letter-spacing: 0.06em; text-transform: uppercase;
+}
+.load-bar-track {
+  width: 180px; height: 3px; background: var(--border); border-radius: 2px; overflow: hidden;
+}
+.load-bar-fill {
+  height: 100%; width: 0%; background: var(--blue); border-radius: 2px;
+  transition: width 0.1s linear;
+}
 </style>
 </head>
 <body>
@@ -282,6 +303,10 @@ footer {
       <div class="frame-browser">
         <div class="frame-img-wrap">
           <img id="t0-img" src="renders/pdf_stills/task0_frames/frame_00_t1950.webp" alt="DHMI 1950">
+          <div class="load-overlay" id="t0-overlay">
+            <div class="load-bar-label">Loading <span id="t0-count">0</span>&thinsp;/&thinsp;76</div>
+            <div class="load-bar-track"><div class="load-bar-fill" id="t0-fill"></div></div>
+          </div>
         </div>
         <div class="frame-ctrl">
           <span class="ctrl-label">Year</span>
@@ -299,6 +324,10 @@ footer {
       <div class="frame-browser">
         <div class="frame-img-wrap">
           <img id="t2-img" src="renders/anim_combined/frame_0000.webp" alt="ELS 1950">
+          <div class="load-overlay" id="t2-overlay">
+            <div class="load-bar-label">Loading <span id="t2-count">0</span>&thinsp;/&thinsp;76</div>
+            <div class="load-bar-track"><div class="load-bar-fill" id="t2-fill"></div></div>
+          </div>
         </div>
         <div class="frame-ctrl">
           <span class="ctrl-label">Year</span>
@@ -326,6 +355,10 @@ footer {
       <div class="frame-browser">
         <div class="frame-img-wrap">
           <img id="t1-3d-img" src="renders/pdf_stills/task1_3d/frame_00_t0.webp" alt="Task 1 3D">
+          <div class="load-overlay" id="t1-3d-overlay">
+            <div class="load-bar-label">Loading <span id="t1-3d-count">0</span>&thinsp;/&thinsp;20</div>
+            <div class="load-bar-track"><div class="load-bar-fill" id="t1-3d-fill"></div></div>
+          </div>
         </div>
         <div class="frame-ctrl">
           <span class="ctrl-label">Step</span>
@@ -342,6 +375,10 @@ footer {
       <div class="frame-browser">
         <div class="frame-img-wrap">
           <img id="t1-gl-img" src="renders/pdf_stills/task1_global/frame_00_t0.webp" alt="Task 1 Global">
+          <div class="load-overlay" id="t1-gl-overlay">
+            <div class="load-bar-label">Loading <span id="t1-gl-count">0</span>&thinsp;/&thinsp;16</div>
+            <div class="load-bar-track"><div class="load-bar-fill" id="t1-gl-fill"></div></div>
+          </div>
         </div>
         <div class="frame-ctrl">
           <span class="ctrl-label">Step</span>
@@ -358,6 +395,10 @@ footer {
       <div class="frame-browser">
         <div class="frame-img-wrap">
           <img id="t1-jet-img" src="renders/pdf_stills/task1_jet100/frame_00_t0.webp" alt="Jet stream">
+          <div class="load-overlay" id="t1-jet-overlay">
+            <div class="load-bar-label">Loading <span id="t1-jet-count">0</span>&thinsp;/&thinsp;100</div>
+            <div class="load-bar-track"><div class="load-bar-fill" id="t1-jet-fill"></div></div>
+          </div>
         </div>
         <div class="frame-ctrl">
           <span class="ctrl-label">Step</span>
@@ -383,6 +424,10 @@ footer {
         <div class="frame-browser">
           <div class="frame-img-wrap">
             <img id="t3-img" src="renders/pdf_stills/task3_frames/frame_00_t1950.webp" alt="Cross-task 1950">
+            <div class="load-overlay" id="t3-overlay">
+              <div class="load-bar-label">Loading <span id="t3-count">0</span>&thinsp;/&thinsp;76</div>
+              <div class="load-bar-track"><div class="load-bar-fill" id="t3-fill"></div></div>
+            </div>
           </div>
           <div class="frame-ctrl">
             <span class="ctrl-label">Year</span>
@@ -573,6 +618,61 @@ const obs = new IntersectionObserver(es => {
   es.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
 }, { threshold: 0.07 });
 document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+// -- IMAGE PRELOADER -------------------------------------------------------
+(function() {
+  const secs = [
+    {
+      id: 't0',
+      files: T0_DATA.map(function(f){ return f.file; })
+    },
+    {
+      id: 't2',
+      files: Array.from({length:76}, function(_,i){
+        return 'renders/anim_combined/frame_' + String(i).padStart(4,'0') + '.webp';
+      })
+    },
+    {
+      id: 't1-3d',
+      files: T1_3D_FILES.map(function(f){ return 'renders/pdf_stills/task1_3d/' + f + '.webp'; })
+    },
+    {
+      id: 't1-gl',
+      files: T1_GL_FILES.map(function(f){ return 'renders/pdf_stills/task1_global/' + f + '.webp'; })
+    },
+    {
+      id: 't1-jet',
+      files: T1_JET_FILES.map(function(f){ return 'renders/pdf_stills/task1_jet100/' + f + '.webp'; })
+    },
+    {
+      id: 't3',
+      files: T3_DATA.map(function(f){ return f.file; })
+    }
+  ];
+
+  secs.forEach(function(sec) {
+    var fillEl    = document.getElementById(sec.id + '-fill');
+    var countEl   = document.getElementById(sec.id + '-count');
+    var overlayEl = document.getElementById(sec.id + '-overlay');
+    var loaded = 0;
+    var total = sec.files.length;
+
+    sec.files.forEach(function(src) {
+      var img = new Image();
+      img.onload = img.onerror = function() {
+        loaded++;
+        var p = (loaded / total * 100).toFixed(1);
+        if (fillEl)  fillEl.style.width = p + '%';
+        if (countEl) countEl.textContent = loaded;
+        if (loaded === total && overlayEl) {
+          overlayEl.classList.add('done');
+          setTimeout(function() { overlayEl.style.display = 'none'; }, 600);
+        }
+      };
+      img.src = src;
+    });
+  });
+})();
 
 // -- NAV ACTIVE -----------------------------------------------------------
 const SECS = ['datasets','task0','task1','cross','videos','findings'];
