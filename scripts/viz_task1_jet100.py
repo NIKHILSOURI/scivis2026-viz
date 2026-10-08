@@ -1,5 +1,5 @@
 ﻿#!/usr/bin/env python
-# Task 1 â€” 100-frame jet stream dynamics (zonal wind at jet level)
+# Task 1 â€" 100-frame jet stream dynamics (zonal wind at jet level)
 # ParaView: Python Shell > Reset > Run Script
 from paraview.simple import *
 import os
@@ -21,7 +21,7 @@ view.OrientationAxesVisibility    = 0
 try: view.UseFXAA = 1
 except Exception: pass
 
-# â”€â”€ Ray tracing â€” enabled only when RAYTRACING=True (export mode) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# â"€â"€ Ray tracing â€" enabled only when RAYTRACING=True (export mode) â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 if RAYTRACING:
     try:
         view.EnableRayTracing = 1
@@ -41,7 +41,7 @@ if RAYTRACING:
     except Exception as _rte:
         print(f"Ray tracing not available: {_rte}")
 else:
-    print("Ray tracing OFF (interactive mode) â€” set RAYTRACING=True before exporting")
+    print("Ray tracing OFF (interactive mode) â€" set RAYTRACING=True before exporting")
 
 jet = OpenDataFile(f"{B}/task1_atmosphere/jet100/jet100.pvd")
 UpdatePipeline()

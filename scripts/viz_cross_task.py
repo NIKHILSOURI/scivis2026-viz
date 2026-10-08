@@ -25,7 +25,7 @@ try:
 except Exception:
     pass
 
-# â”€â”€ Ray tracing â€” enabled only when RAYTRACING=True (export mode) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# â"€â"€ Ray tracing â€" enabled only when RAYTRACING=True (export mode) â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 if RAYTRACING:
     try:
         view.EnableRayTracing = 1
@@ -45,7 +45,7 @@ if RAYTRACING:
     except Exception as _rte:
         print(f"Ray tracing not available: {_rte}")
 else:
-    print("Ray tracing OFF (interactive mode) â€” set RAYTRACING=True before exporting")
+    print("Ray tracing OFF (interactive mode) â€" set RAYTRACING=True before exporting")
 
 # CEI surface
 field = OpenDataFile(f"{B}/task0_climate/frames/task0.pvd")
@@ -115,7 +115,7 @@ if os.path.exists(cp_pvd):
     gl.OrientationArray = ["POINTS", "No orientation array"]
     UpdatePipeline(proxy=gl)
     gd = Show(gl, view)
-    # deep crimson â€” same dot color as Task 0 so both views read identically
+    # deep crimson â€" same dot color as Task 0 so both views read identically
     gd.AmbientColor   = [0.72, 0.02, 0.10]
     gd.DiffuseColor   = [0.72, 0.02, 0.10]
     gd.ColorArrayName = ["POINTS", ""]
@@ -134,7 +134,7 @@ if os.path.exists(jet_pvd):
     jd = Show(jtube, view)
     ColorBy(jd, ("POINTS", "CoreWindSpeed_ms"))
     jlut = GetColorTransferFunction("CoreWindSpeed_ms")
-    # identical anchors to the Task 1 wind maps â€” same speed = same color everywhere
+    # identical anchors to the Task 1 wind maps â€" same speed = same color everywhere
     jlut.RGBPoints = [
          0, 0.12, 0.28, 0.78,
         12, 0.25, 0.55, 0.88,
@@ -172,7 +172,7 @@ if os.path.exists(jet_pvd):
     except Exception: pass
     print("Jet core tube loaded (animates every 5 years)")
 else:
-    print("WARNING: jet_core.pvd missing â€” run build_jet_core_lines.py first")
+    print("WARNING: jet_core.pvd missing â€" run build_jet_core_lines.py first")
 
 # coastlines
 G = f"{B}/task1_atmosphere/global"
@@ -200,7 +200,7 @@ for _name in ("AnnotateTimeFilter", "AnnotationTimeFilter"):
     except Exception:
         pass
 
-# camera â€” full globe (jet cores of both hemispheres are shown)
+# camera â€" full globe (jet cores of both hemispheres are shown)
 view.CameraParallelProjection = 1
 ResetCamera(view)
 view.CameraParallelScale = view.CameraParallelScale * 0.95

@@ -1,5 +1,5 @@
 ﻿#!/usr/bin/env python
-# Task 1 â€” 3D layered atmosphere: 5 altitude shelves, self-lit
+# Task 1 â€" 3D layered atmosphere: 5 altitude shelves, self-lit
 # ParaView: Python Shell > Reset > Run Script
 from paraview.simple import *
 import os
@@ -30,7 +30,7 @@ view.OrientationAxesVisibility    = 0
 try: view.UseFXAA = 1
 except Exception: pass
 
-# â”€â”€ Ray tracing â€” enabled only when RAYTRACING=True (export mode) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# â"€â"€ Ray tracing â€" enabled only when RAYTRACING=True (export mode) â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 if RAYTRACING:
     try:
         view.EnableRayTracing = 1
@@ -50,12 +50,12 @@ if RAYTRACING:
     except Exception as _rte:
         print(f"Ray tracing not available: {_rte}")
 else:
-    print("Ray tracing OFF (interactive mode) â€” set RAYTRACING=True before exporting")
+    print("Ray tracing OFF (interactive mode) â€" set RAYTRACING=True before exporting")
 
 vol = OpenDataFile(f"{B}/task1_atmosphere/global3d/task1_3d.pvd")
 UpdatePipeline()
 
-# colour scale for upper shelves â€” same theme as task1_global (max 110 m/s here)
+# colour scale for upper shelves â€" same theme as task1_global (max 110 m/s here)
 jlut = GetColorTransferFunction("WindSpeed_ms")
 jlut.RGBPoints = [
       0, 0.12, 0.28, 0.78,   # calm       -> blue
@@ -68,7 +68,7 @@ jlut.RGBPoints = [
 ]
 jlut.ColorSpace = "Lab"
 
-# surface layer â€” separate 0-25 m/s colour scale so it doesn't go black
+# surface layer â€" separate 0-25 m/s colour scale so it doesn't go black
 surf_slice = Slice(Input=vol)
 surf_slice.SliceType = "Plane"
 surf_slice.SliceType.Origin = [0.0, 0.0, 0.0]
@@ -94,7 +94,7 @@ sd.Opacity = 1.0
 sd.Ambient = 1.0; sd.Diffuse = 0.0            # self-lit: full brightness
 RenameSource("L0_SURFACE", calc)
 
-# upper shelves â€” threshold out the calm air at each level
+# upper shelves â€" threshold out the calm air at each level
 last = None
 for k, (z, min_spd, label) in enumerate(LAYERS[1:], start=1):
     sl = Slice(Input=vol)
@@ -183,7 +183,7 @@ if os.path.exists(coast):
         dd.ColorArrayName = ["POINTS", ""]
         dd.Ambient = 1.0; dd.Diffuse = 0.0
 
-# floating labels â€” use Translation not Position (Position crashes PV 6.1.1)
+# floating labels â€" use Translation not Position (Position crashes PV 6.1.1)
 for k, (z, _m, label) in enumerate(LAYERS):
     try:
         t3 = Text3D()

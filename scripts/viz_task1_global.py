@@ -1,5 +1,5 @@
 ﻿#!/usr/bin/env python
-# Task 1 â€” global jet-stream visualization, 16 timesteps
+# Task 1 â€" global jet-stream visualization, 16 timesteps
 # ParaView: View > Python Shell > Run Script
 from paraview.simple import *
 import os
@@ -22,7 +22,7 @@ view.OrientationAxesVisibility = 0
 try: view.UseFXAA = 1
 except Exception: pass
 
-# â”€â”€ Ray tracing â€” enabled only when RAYTRACING=True (export mode) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# â"€â"€ Ray tracing â€" enabled only when RAYTRACING=True (export mode) â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 if RAYTRACING:
     try:
         view.EnableRayTracing = 1
@@ -42,7 +42,7 @@ if RAYTRACING:
     except Exception as _rte:
         print(f"Ray tracing not available: {_rte}")
 else:
-    print("Ray tracing OFF (interactive mode) â€” set RAYTRACING=True before exporting")
+    print("Ray tracing OFF (interactive mode) â€" set RAYTRACING=True before exporting")
 
 # wind speed field
 pvd = OpenDataFile(f"{G}/task1_global.pvd")
@@ -122,10 +122,10 @@ borders_d.DiffuseColor = [0.28, 0.36, 0.46]
 borders_d.LineWidth    = 0.8
 borders_d.Opacity      = 0.70
 
-# 2D streamlines â€” wind trajectories
+# 2D streamlines â€" wind trajectories
 tracer = StreamTracer(Input=pvd, SeedType="Point Cloud")
 tracer.Vectors                  = ["POINTS", "Wind_ms"]
-tracer.MaximumStreamlineLength  = 120.0   # degrees â€” enough to trace a jet arc
+tracer.MaximumStreamlineLength  = 120.0   # degrees â€" enough to trace a jet arc
 tracer.IntegrationDirection     = "BOTH"
 tracer.IntegratorType           = "Runge-Kutta 4-5"
 tracer.MaximumError             = 1e-6
