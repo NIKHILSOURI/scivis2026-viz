@@ -325,11 +325,11 @@ footer {
   </div>
   <div class="ieee-badge">IEEE SciVis Contest 2026 · Finalist</div>
   <h1>75 Years of<br><em>Climate Extremes</em></h1>
-  <p class="hero-desc">A topological and atmospheric analysis of compound extreme events from the NEX-GDDP-CMIP6 ensemble, ACCESS-CM2 model, 1950–2025.</p>
+  <p class="hero-desc">A topological and atmospheric analysis of compound extreme events from the NEX-GDDP-CMIP6 / ACCESS-CM2 model, 1950--2025.</p>
   <div class="hero-pills">
     <span class="pill">DHMI Field &amp; Topology</span>
     <span class="pill">Atmospheric Dynamics</span>
-    <span class="pill">Ocean–Atmosphere Connection</span>
+    <span class="pill">Jet Stream Waviness</span>
   </div>
 </section>
 
@@ -345,12 +345,12 @@ footer {
       <div class="finding reveal">
         <div class="f-num">TASK 0 · SURFACE CLIMATE</div>
         <div class="f-title">NEX-GDDP-CMIP6 / ACCESS-CM2</div>
-        <div class="f-body">Bias-corrected, statistically downscaled surface climate fields (BCSD). 76 annual means from 1950–2025 at 0.25° spatial resolution (~25 km, 1440×600 grid) under the SSP2-4.5 emissions scenario. Three daily fields aggregated to annual means: near-surface air temperature (TAS), precipitation rate (PR), and relative humidity (HURS). Combined into the DHMI compound-stress index: DHMI = 0.4·T̂ + 0.4·(1−P̂) + 0.2·Ĥ, normalized to the full 1950–2025 range.</div>
+        <div class="f-body">Bias-corrected, statistically downscaled surface climate fields (BCSD). 76 annual means from 1950--2025 at 0.25° spatial resolution (~25 km, 1440×600 grid) under the SSP2-4.5 emissions scenario. Three daily fields aggregated to annual means: near-surface air temperature (TAS), precipitation rate (PR), and relative humidity (HURS). Combined into the DHMI compound-stress index: DHMI = 0.4·T̂ + 0.4·(1−P̂) + 0.2·Ĥ, where each variable is normalized to its per-cell percentile rank across 1950--2025. Non-land and ice-covered cells are masked; year 2012 is excluded from normalization due to known data corruption.</div>
       </div>
       <div class="finding reveal">
         <div class="f-num">TASK 1 · ATMOSPHERE</div>
         <div class="f-title">NASA GEOS DYAMOND Jet Stream</div>
-        <div class="f-body">Kilometre-scale global atmospheric simulation at six-hourly cadence. 16 snapshots re-projected via inverse gnomonic projection to a 0.25° longitude–latitude grid (Gaussian post-smoothing σ = 4.5 cells). Captures upper-level jet-stream morphology at weather time-scales — including jet meandering, splitting, and reformation — details unresolvable in annual climate reanalyses. Interpolated to a smooth 100-frame, 10 fps animation for visualization.</div>
+        <div class="f-body">Kilometre-scale global atmospheric simulation at six-hourly cadence. 16 snapshots re-projected via inverse gnomonic projection to a 0.25° longitude-latitude grid (Gaussian post-smoothing σ = 4.5 cells). Captures upper-level jet-stream morphology at weather time-scales -- including jet meandering, splitting, and reformation -- details unresolvable in annual climate reanalyses. As a single short integration, this dataset covers weather time-scales only and does not represent multi-decadal climate trends. Interpolated to a smooth 100-frame, 10 fps animation for visualization.</div>
       </div>
     </div>
   </div>
@@ -368,7 +368,7 @@ footer {
     <!-- 0a: DHMI Sweep -->
     <div class="reveal" style="margin-bottom:48px">
       <div class="browser-label" style="font-size:13px;color:var(--ink);margin-bottom:4px">0a &nbsp;·&nbsp; DHMI Sweep — Year by Year</div>
-      <p style="font-size:13px;color:var(--ink2);max-width:680px;margin-bottom:12px;line-height:1.6">The Dry-Hot Magnitude Index (DHMI = 0.4·T̂ + 0.4·(1−P̂) + 0.2·Ĥ) combines normalised temperature, precipitation deficit, and humidity anomalies into a single compound-stress scalar per grid cell. Drag through all 76 years to watch hotspots emerge, intensify, and shift poleward — the Amazon and South-East Asian corridors show the strongest long-term accumulation, with the single most intense individual event recorded in 1952 (Amazon, persistence 0.99).</p>
+      <p style="font-size:13px;color:var(--ink2);max-width:680px;margin-bottom:12px;line-height:1.6">The Dry-Hot Magnitude Index (DHMI = 0.4·T̂ + 0.4·(1−P̂) + 0.2·Ĥ) combines normalised temperature, precipitation deficit, and humidity anomalies into a single compound-stress scalar per grid cell. Drag through all 76 years to watch hotspots emerge and intensify -- the Amazon and South-East Asian corridors show the strongest long-term accumulation, with the single most intense individual event recorded in 1952 (Amazon, persistence 0.99).</p>
       <div class="frame-browser">
         <div class="frame-img-wrap">
           <img id="t0-img" src="renders/pdf_stills/task0_frames/frame_00_t1950.webp" alt="DHMI 1950">
@@ -386,13 +386,13 @@ footer {
       <div class="thumb-strip" id="t0-thumbs" style="margin-top:10px"></div>
     </div>
 
-    <!-- 0b: ELS Topology -->
+    <!-- 0b: Persistent Hotspot Tracking -->
     <div class="reveal">
-      <div class="browser-label" style="font-size:13px;color:var(--ink);margin-bottom:4px">0b &nbsp;·&nbsp; ELS Topology — Up Close</div>
-      <p style="font-size:13px;color:var(--ink2);max-width:680px;margin-bottom:12px;line-height:1.6">Extremal Level Sets (ELS) extracted with TTK's persistence diagram (saddle-to-maximum pairs, threshold 0.04) identify ~750 coherent compound-stress hotspots per year. Wasserstein matching links features across consecutive years to reveal their birth, death, merging, and splitting — producing 2,488 continuous tracks over the full 76-year record. The Reeb graph topology (left panel) encodes structural change; the DHMI scalar field (right) gives spatial context.</p>
+      <div class="browser-label" style="font-size:13px;color:var(--ink);margin-bottom:4px">0b &nbsp;·&nbsp; Persistent Hotspot Tracking</div>
+      <p style="font-size:13px;color:var(--ink2);max-width:680px;margin-bottom:12px;line-height:1.6">TTK persistence diagram (saddle-to-maximum pairs, threshold 0.04) identifies ~750 coherent compound-stress features per year. Wasserstein-1 matching links features across consecutive years, producing space-time tubes that trace feature birth, death, merging, and splitting across the 76-year record. The 29 most persistent tubes are shown; the dual-panel view combines the tube structure (left) with the DHMI scalar field (right).</p>
       <div class="frame-browser">
         <div class="frame-img-wrap">
-          <img id="t2-img" src="renders/anim_combined/frame_0000.webp" alt="ELS 1950">
+          <img id="t2-img" src="renders/anim_combined/frame_0000.webp" alt="Hotspot tracking 1950">
           <div class="load-overlay" id="t2-overlay">
             <div class="load-bar-label">Loading <span id="t2-count">0</span>&thinsp;/&thinsp;76</div>
             <div class="load-bar-track"><div class="load-bar-fill" id="t2-fill"></div></div>
@@ -415,32 +415,12 @@ footer {
   <div class="container">
     <p class="section-label reveal">Task 1</p>
     <h2 class="reveal">Atmospheric Dynamics</h2>
-    <p class="section-desc reveal">Wind speed across five altitude layers – surface through the jet stream – shows how atmospheric circulation drives and redistributes compound extreme events. Three complementary views below.</p>
+    <p class="section-desc reveal">Wind speed across five altitude layers -- surface through the jet stream -- illustrates jet stream structure and temporal variability during a single short model run. Three complementary views below.</p>
 
-    <!-- 1a: 3D Layers -->
+    <!-- 1a: Global Wind -->
     <div class="reveal" style="margin-bottom:40px">
-      <div class="browser-label" style="font-size:13px;color:var(--ink);margin-bottom:4px">1a &nbsp;·&nbsp; 3D Atmosphere Layers</div>
-      <p style="font-size:13px;color:var(--ink2);max-width:680px;margin-bottom:12px;line-height:1.6">Five altitude layers rendered as stacked surfaces with stream tubes. The isosurfaces and tubes reveal how wind energy propagates vertically – connecting surface temperature anomalies below the boundary layer to jet-level dynamics above.</p>
-      <div class="frame-browser">
-        <div class="frame-img-wrap">
-          <img id="t1-3d-img" src="renders/pdf_stills/task1_3d/frame_00_t0.webp" alt="Task 1 3D">
-          <div class="load-overlay" id="t1-3d-overlay">
-            <div class="load-bar-label">Loading <span id="t1-3d-count">0</span>&thinsp;/&thinsp;20</div>
-            <div class="load-bar-track"><div class="load-bar-fill" id="t1-3d-fill"></div></div>
-          </div>
-        </div>
-        <div class="frame-ctrl">
-          <span class="ctrl-label">Step</span>
-          <input type="range" id="t1-3d-slider" min="0" max="19" value="0" oninput="updateT1_3d(+this.value)">
-          <div class="frame-badge" id="t1-3d-badge">t = 0</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 1b: Global Wind -->
-    <div class="reveal" style="margin-bottom:40px">
-      <div class="browser-label" style="font-size:13px;color:var(--ink);margin-bottom:4px">1b &nbsp;·&nbsp; Global Wind Field</div>
-      <p style="font-size:13px;color:var(--ink2);max-width:680px;margin-bottom:12px;line-height:1.6">A 2D global map of wind speed at jet level with streamline tubes overlaid. Contour lines at 40, 60, and 80 m/s mark the jet core. The 16 timesteps step through the model run, showing the jet stream shifting poleward as warming intensifies.</p>
+      <div class="browser-label" style="font-size:13px;color:var(--ink);margin-bottom:4px">1a &nbsp;·&nbsp; Global Wind Field</div>
+      <p style="font-size:13px;color:var(--ink2);max-width:680px;margin-bottom:12px;line-height:1.6">A 2D global map of wind speed at jet level with streamline tubes overlaid. Contour lines at 40, 60, and 80 m/s mark the jet core. The 16 timesteps step through the single short model run, capturing jet stream structure and variability at weather time-scales.</p>
       <div class="frame-browser">
         <div class="frame-img-wrap">
           <img id="t1-gl-img" src="renders/pdf_stills/task1_global/frame_00_t0.webp" alt="Task 1 Global">
@@ -457,10 +437,30 @@ footer {
       </div>
     </div>
 
+    <!-- 1b: 3D Layers -->
+    <div class="reveal" style="margin-bottom:40px">
+      <div class="browser-label" style="font-size:13px;color:var(--ink);margin-bottom:4px">1b &nbsp;·&nbsp; 3D Atmosphere Layers</div>
+      <p style="font-size:13px;color:var(--ink2);max-width:680px;margin-bottom:12px;line-height:1.6">Five altitude layers rendered as stacked transparent surfaces with stream tubes. The tubes reveal how wind energy propagates vertically across pressure levels, from the lower troposphere to the jet stream.</p>
+      <div class="frame-browser">
+        <div class="frame-img-wrap">
+          <img id="t1-3d-img" src="renders/pdf_stills/task1_3d/frame_00_t0.webp" alt="Task 1 3D">
+          <div class="load-overlay" id="t1-3d-overlay">
+            <div class="load-bar-label">Loading <span id="t1-3d-count">0</span>&thinsp;/&thinsp;20</div>
+            <div class="load-bar-track"><div class="load-bar-fill" id="t1-3d-fill"></div></div>
+          </div>
+        </div>
+        <div class="frame-ctrl">
+          <span class="ctrl-label">Step</span>
+          <input type="range" id="t1-3d-slider" min="0" max="19" value="0" oninput="updateT1_3d(+this.value)">
+          <div class="frame-badge" id="t1-3d-badge">t = 0</div>
+        </div>
+      </div>
+    </div>
+
     <!-- 1c: Jet Stream 100 -->
     <div class="reveal">
       <div class="browser-label" style="font-size:13px;color:var(--ink);margin-bottom:4px">1c &nbsp;·&nbsp; Jet Stream Dynamics — 100 Frames</div>
-      <p style="font-size:13px;color:var(--ink2);max-width:680px;margin-bottom:12px;line-height:1.6">A 100-frame high-temporal-resolution sequence of zonal wind speed at jet level. The dense temporal sampling captures day-to-day variability, sudden accelerations, and poleward displacements that directly correlate with surface extreme events recorded in the DHMI field.</p>
+      <p style="font-size:13px;color:var(--ink2);max-width:680px;margin-bottom:12px;line-height:1.6">A 100-frame interpolated sequence of zonal wind speed at jet level at 10 fps. The dense temporal sampling captures jet meandering, splitting, and reformation within the single short model run.</p>
       <div class="frame-browser">
         <div class="frame-img-wrap">
           <img id="t1-jet-img" src="renders/pdf_stills/task1_jet100/frame_00_t0.webp" alt="Jet stream">
@@ -485,8 +485,8 @@ footer {
 <section id="cross">
   <div class="container">
     <p class="section-label reveal">Cross-Task</p>
-    <h2 class="reveal">Ocean–Atmosphere Connection</h2>
-    <p class="section-desc reveal">Gulf Stream SST anomalies drive moisture transport and jet stream displacement – the physical link behind compound extremes on land. Drag through all 76 years of the combined record.</p>
+    <h2 class="reveal">Surface-Atmosphere Overlay</h2>
+    <p class="section-desc reveal">DHMI persistence values and upper-level jet stream position overlaid in a single 2D map for five key years. The overlay reveals qualitative spatial co-occurrence between surface compound extremes and jet stream waviness.</p>
 
     <div class="task-split reveal">
       <div>
@@ -506,16 +506,16 @@ footer {
         </div>
       </div>
       <div class="info-box">
-        <div class="info-title">Mechanism</div>
-        <div class="info-row" style="font-size:13px">Warm Gulf Stream SST anomalies intensify poleward moisture transport, displacing the jet stream and amplifying land-surface compound extremes downstream.</div>
+        <div class="info-title">Qualitative Signal</div>
+        <div class="info-row" style="font-size:13px">A weakened meridional temperature gradient -- consistent with Arctic amplification (Francis &amp; Vavrus, 2012) -- is associated with increased jet stream waviness and Rossby wave amplitude, which may favour persistent blocking patterns over land regions with elevated DHMI.</div>
         <hr class="divider">
-        <div class="info-title">Key Years</div>
+        <div class="info-title">Notable Years</div>
         <div style="font-size:13px;color:var(--ink2);line-height:2.1">
-          <b>1950</b> – Baseline period<br>
-          <b>1969</b> – Early warming signal<br>
-          <b>1988</b> – Notable ENSO year<br>
-          <b style="color:var(--red)">2006</b> – Peak compound extreme<br>
-          <b>2025</b> – End of record
+          <b>1950</b> -- Baseline period<br>
+          <b>1969</b> -- Early warming signal<br>
+          <b>1988</b> -- High jet waviness year<br>
+          <b style="color:var(--red)">2006</b> -- Highest DHMI persistence<br>
+          <b>2025</b> -- End of record
         </div>
       </div>
     </div>
@@ -529,7 +529,7 @@ footer {
   <div class="container">
     <p class="section-label reveal">Video</p>
     <h2 class="reveal">Full Visualization</h2>
-    <p class="section-desc reveal">The complete animated walkthrough of all tasks – DHMI field, ELS topology, atmospheric dynamics, and the ocean–atmosphere cross-task analysis.</p>
+    <p class="section-desc reveal">The complete animated walkthrough of all tasks -- DHMI field, topological analysis, atmospheric dynamics, and the surface-atmosphere cross-task overlay.</p>
     <div class="reveal" style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:12px;border:1px solid var(--border)">
       <iframe style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;"
         src="https://www.youtube.com/embed/VREUWyWnVqI"
@@ -551,28 +551,28 @@ footer {
     <div class="findings-grid">
       <div class="finding reveal">
         <div class="f-num">01 / TREND</div>
-        <div class="f-title">DHMI intensifies over 75 years</div>
-        <div class="f-body">Maximum DHMI persistence rises from ~0.96 in 1950 to ~0.98 in 2025. The sharpest increase occurs post-1990, consistent with accelerating warming.</div>
+        <div class="f-title">DHMI increases over the 75-year record</div>
+        <div class="f-body">Compound-stress values across tropical and subtropical land regions rise through the 1950--2025 period under SSP2-4.5, consistent with IPCC AR6 projected trends for simultaneous heat and precipitation extremes.</div>
       </div>
       <div class="finding reveal">
         <div class="f-num">02 / JET STREAM</div>
-        <div class="f-title">Poleward jet shift amplifies extremes</div>
-        <div class="f-body">Years with the jet stream displaced ≥ 3° poleward show 40% higher topological persistence, linking large-scale circulation to surface compound extremes.</div>
+        <div class="f-title">Jet waviness and blocking patterns</div>
+        <div class="f-body">The DYAMOND simulation captures jet stream meandering and Rossby wave amplification. A weakened meridional temperature gradient -- consistent with Arctic amplification (Francis &amp; Vavrus, 2012) -- is associated with increased jet waviness and persistent blocking.</div>
       </div>
       <div class="finding reveal">
         <div class="f-num">03 / 2006</div>
-        <div class="f-title" style="color:var(--red)">2006 – Record compound extreme</div>
-        <div class="f-body">Highest persistence (0.98) in 76 years. Simultaneous anomalies across Central America, the Sahel, and South Asia coincided with anomalous jet stream blocking.</div>
+        <div class="f-title" style="color:var(--red)">2006 -- Highest DHMI persistence in the record</div>
+        <div class="f-body">Year 2006 shows the highest per-cell DHMI persistence across the full 76-year record. Simultaneous anomalies are visible across Central America, the Sahel, and South Asia, coinciding with a blocking jet configuration in the atmospheric data.</div>
       </div>
       <div class="finding reveal">
         <div class="f-num">04 / GEOGRAPHY</div>
-        <div class="f-title">Tropical hotspots are persistent</div>
-        <div class="f-body">Central America and South Asia consistently host the most persistent DHMI maxima – regions with combined heat, drought, and humidity vulnerability.</div>
+        <div class="f-title">Tropical regions are persistently stressed</div>
+        <div class="f-body">Central America, the Sahel, and South Asia consistently host the highest DHMI maxima across all 76 years -- regions with combined heat, precipitation deficit, and humidity vulnerability that compound over time.</div>
       </div>
       <div class="finding reveal">
         <div class="f-num">05 / TOPOLOGY</div>
-        <div class="f-title">Fewer features = more severe events</div>
-        <div class="f-body">Years with fewer but higher-persistence topological features correspond to geographically concentrated, physically more severe compound extreme events.</div>
+        <div class="f-title">Persistence diagram captures event structure</div>
+        <div class="f-body">TTK persistence diagram (threshold 0.04) yields ~750 compound-stress features per year. Wasserstein-1 matching across consecutive years produces 2,488 space-time tracks over the full record -- fewer, more persistent features signal geographically concentrated events.</div>
       </div>
     </div>
   </div>
@@ -581,11 +581,11 @@ footer {
 <!-- FOOTER -->
 <footer>
   <div class="ft-collab">
-    <div class="ft-inst"><span>IIIT</span> Hyderabad</div>
-    <div class="ft-x">×</div>
     <div class="ft-inst"><span>BTH</span> Sweden</div>
+    <div class="ft-x">×</div>
+    <div class="ft-inst"><span>IIIT</span> Hyderabad</div>
   </div>
-  <div class="ft-title">Nikhil Souri · Raghavendra · Prashant – IIIT Hyderabad &nbsp;|&nbsp; BTH Blekinge Institute of Technology</div>
+  <div class="ft-title">Nikhil Souri Yalamati (BTH, Sweden) &nbsp;·&nbsp; Raghavendra Sridharamurthy (IIIT Hyderabad, India) &nbsp;·&nbsp; Prashant Goswami (BTH, Sweden)</div>
   <div class="ft-ieee">IEEE SciVis Contest 2026 · Finalist · IEEE VIS 2026 Boston</div>
   <div class="ft-links">
     <a href="https://github.com/NIKHILSOURI/scivis2026-viz" target="_blank">GitHub Repository</a>
@@ -618,7 +618,7 @@ function pct(el) {
 document.querySelectorAll('input[type=range]').forEach(el => el.addEventListener('input', () => pct(el)));
 
 // Key year frame indices (from paper): 1950 baseline, 1982 C.America peak,
-// 2006 hero/record compound extreme, 2025 end of record
+// 2006 hero/highest DHMI persistence, 2025 end of record
 const KEY_FRAME_IDX = [0, 32, 56, 75];
 
 // -- TASK 0a: DHMI sweep (independent) -----------------------------------
@@ -637,7 +637,7 @@ function updateT0(i) {
   thumbs.forEach((el, j) => el.classList.toggle('active', j === nearest));
 }
 
-// -- TASK 0b: ELS topology (independent) ---------------------------------
+// -- TASK 0b: persistent hotspot tracking (independent) ------------------
 function updateT2(i) {
   document.getElementById('t2-img').src =
     'renders/anim_combined/frame_' + String(i).padStart(4,'0') + '.webp';
